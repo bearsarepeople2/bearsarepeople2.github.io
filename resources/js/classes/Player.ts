@@ -16,42 +16,69 @@ export class Player extends Actor {
         this.keyD = this.scene.input.keyboard.addKey('D');
 
         this.initAnimations()
+        this.initAttack()
     }
 
     update(): void {
         this.getBody().setVelocity(0);
 
         if (this.keyW?.isDown) {
-            this.anims.play('playerUp', true);
-            this.body.velocity.y = -110;
+            if (!this.isAttacking) {
+                this.anims.play('playerUp', true);
+            }
+
+            this.body.velocity.y = -this.speed;
+            // this.actorState = 'moving'
         }
         if (this.keyA?.isDown) {
-            if (this.keyW?.isUp && this.keyS.isUp) {
+            if (this.keyW?.isUp && this.keyS.isUp && !this.isAttacking) {
                 this.anims.play('playerLeft', true);
             }
+
             this.setFlipX(true);
-            this.body.velocity.x = -110;
+            this.body.velocity.x = -this.speed;
+            // this.actorState = 'moving'
         }
         if (this.keyS?.isDown) {
-            this.anims.play('playerDown', true);
-            this.body.velocity.y = 110;
+            if (!this.isAttacking) {
+                this.anims.play('playerDown', true);
+            }
+
+            this.body.velocity.y = this.speed;
+            // this.actorState = 'moving'
         }
         if (this.keyD?.isDown) {
-            if (this.keyW?.isUp && this.keyS.isUp) {
+            if (this.keyW?.isUp && this.keyS.isUp && !this.isAttacking) {
                 this.anims.play('playerRight', true);
             }
+
             this.setFlipX(false);
-            this.body.velocity.x = 110;
+            this.body.velocity.x = this.speed;
+            // this.actorState = 'moving'
         }
+
+        // if (this.actorState === 'idle') {
+        //     this.anims.play('playerIdle', true);
+        // }
     }
 
     initAnimations() {
         this.anims.create({
+            key: 'playerIdle',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 81,
+                end: 86,
+            }),
+            frameRate: 1,
+        });
+
+        this.anims.create({
             key: 'playerLeft',
             frames: this.anims.generateFrameNames('girl', {
-                prefix: 'sprite',
-                start: 31,
-                end: 36,
+                prefix: 'girl',
+                start: 23,
+                end: 28,
             }),
             frameRate: 16,
         });
@@ -59,9 +86,9 @@ export class Player extends Actor {
         this.anims.create({
             key: 'playerRight',
             frames: this.anims.generateFrameNames('girl', {
-                prefix: 'sprite',
-                start: 31,
-                end: 36,
+                prefix: 'girl',
+                start: 23,
+                end: 28,
             }),
             frameRate: 16,
         });
@@ -69,9 +96,9 @@ export class Player extends Actor {
         this.anims.create({
             key: 'playerDown',
             frames: this.anims.generateFrameNames('girl', {
-                prefix: 'sprite',
-                start: 96,
-                end: 101,
+                prefix: 'girl',
+                start: 87,
+                end: 92,
             }),
             frameRate: 16,
         });
@@ -79,11 +106,90 @@ export class Player extends Actor {
         this.anims.create({
             key: 'playerUp',
             frames: this.anims.generateFrameNames('girl', {
-                prefix: 'sprite',
-                start: 15,
-                end: 20,
+                prefix: 'girl',
+                start: 7,
+                end: 12,
             }),
             frameRate: 16,
+        });
+
+        this.anims.create({
+            key: 'playerAttackDown',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 35,
+                end: 43,
+            }),
+            frameRate: 16,
+        });
+
+        this.anims.create({
+            key: 'playerAttackRight',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 99,
+                end: 107,
+            }),
+            frameRate: 16,
+        });
+
+        this.anims.create({
+            key: 'playerAttackLeft',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 99,
+                end: 107,
+            }),
+            frameRate: 16,
+        });
+
+        this.anims.create({
+            key: 'playerAttackUp',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 65,
+                end: 73,
+            }),
+            frameRate: 16,
+        });
+    }
+
+    initAttack(): void {
+        this.on('animationcomplete', function (event) {
+            if (event.key.includes('Attack')) {
+                this.isAttacking = false
+            }
+        })
+
+        this.scene.input.on('pointerdown', (pointer) => {
+            if (this.isAttacking) {
+                return
+            }
+
+            let postionFromPlayerX = pointer.position.x - (this.scene.cameras.main.width / 2)
+            let postionFromPlayerY = pointer.position.y - (this.scene.cameras.main.height / 2)
+
+            if (Math.abs(postionFromPlayerX) > postionFromPlayerY) {
+                this.isAttacking = true
+                this.anims.play('playerAttackRight', true);
+                this.setFlipX(false);
+            }
+
+            if (Math.abs(postionFromPlayerY) > postionFromPlayerX) {
+                this.anims.play('playerAttackUp', true);
+                this.isAttacking = true
+            }
+
+            if (-postionFromPlayerX > Math.abs(postionFromPlayerY)) {
+                this.anims.play('playerAttackLeft', true);
+                this.isAttacking = true
+                this.setFlipX(true);
+            }
+
+            if (postionFromPlayerY > Math.abs(postionFromPlayerX)) {
+                this.isAttacking = true
+                this.anims.play('playerAttackDown', true);
+            }
         });
     }
 }
