@@ -1,8 +1,10 @@
 import { Scene } from 'phaser';
 import { Player } from '../classes/Player';
+import { Dragon } from '../classes/Dragon';
 
 export class ForestScene extends Scene {
     private player: Player;
+    private dragon: Dragon;
 
     constructor() {
         super('forest-scene');
@@ -22,10 +24,14 @@ export class ForestScene extends Scene {
         // @ts-ignore
         let mapLayer = forestTiles.createLayer('bottom', [grassMap, waterMap]);
 
+        // Player
         this.player = new Player(this, 24 * 16, 37 * 16);
-
         this.physics.add.collider(this.player, mapLayer);
         mapLayer?.setCollisionByProperty({ collides: true });
+
+        // Dragons
+        this.dragon = new Dragon(this, 32 * 16, 28 * 16).setImmovable(true);
+        this.physics.add.collider(this.player, this.dragon);
 
         // follow
         this.cameras.main.startFollow(this.player);
@@ -33,5 +39,6 @@ export class ForestScene extends Scene {
 
     update(): void {
         this.player.update();
+        this.dragon.update();
     }
 }

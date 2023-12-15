@@ -1,3 +1,4 @@
+import { EVENTS_NAME } from '../enums/consts';
 import { Actor } from './Actor';
 
 export class Player extends Actor {
@@ -28,16 +29,14 @@ export class Player extends Actor {
             }
 
             this.body.velocity.y = -this.speed;
-            // this.actorState = 'moving'
         }
         if (this.keyA?.isDown) {
             if (this.keyW?.isUp && this.keyS.isUp && !this.isAttacking) {
                 this.anims.play('playerLeft', true);
+                this.setFlipX(true);
             }
 
-            this.setFlipX(true);
             this.body.velocity.x = -this.speed;
-            // this.actorState = 'moving'
         }
         if (this.keyS?.isDown) {
             if (!this.isAttacking) {
@@ -45,16 +44,14 @@ export class Player extends Actor {
             }
 
             this.body.velocity.y = this.speed;
-            // this.actorState = 'moving'
         }
         if (this.keyD?.isDown) {
             if (this.keyW?.isUp && this.keyS.isUp && !this.isAttacking) {
                 this.anims.play('playerRight', true);
+                this.setFlipX(false);
             }
 
-            this.setFlipX(false);
             this.body.velocity.x = this.speed;
-            // this.actorState = 'moving'
         }
 
         // if (this.actorState === 'idle') {
@@ -166,13 +163,26 @@ export class Player extends Actor {
                 return
             }
 
+            let attackAngle = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY)
+
+            // The angle was in reverse idk why so this reverses it
+            attackAngle = Math.abs(Phaser.Math.RadToDeg(Phaser.Math.Angle.CounterClockwise(attackAngle)) - 360)
+
+            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 32, 48, 0xff0000, 0.5).setOrigin(0.5, 1).setAngle(attackAngle)
+
+            this.scene.add.existing(rect);
+            this.scene.physics.add.existing(rect, false)
+
+            // console.log([arc, pointer.position.x, pointer.position.y])
+            this.scene.game.events.emit(EVENTS_NAME.playerAttack, this, rect);
+
             let postionFromPlayerX = pointer.position.x - (this.scene.cameras.main.width / 2)
             let postionFromPlayerY = pointer.position.y - (this.scene.cameras.main.height / 2)
 
             if (Math.abs(postionFromPlayerX) > postionFromPlayerY) {
                 this.isAttacking = true
-                this.anims.play('playerAttackRight', true);
                 this.setFlipX(false);
+                this.anims.play('playerAttackRight', true);
             }
 
             if (Math.abs(postionFromPlayerY) > postionFromPlayerX) {
@@ -181,9 +191,9 @@ export class Player extends Actor {
             }
 
             if (-postionFromPlayerX > Math.abs(postionFromPlayerY)) {
+                this.setFlipX(true);
                 this.anims.play('playerAttackLeft', true);
                 this.isAttacking = true
-                this.setFlipX(true);
             }
 
             if (postionFromPlayerY > Math.abs(postionFromPlayerX)) {
