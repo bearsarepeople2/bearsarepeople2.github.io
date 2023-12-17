@@ -30,7 +30,7 @@ export class ForestScene extends Scene {
         mapLayer?.setCollisionByProperty({ collides: true });
 
         // Dragons
-        this.dragon = new Dragon(this, 32 * 16, 28 * 16).setImmovable(true);
+        this.dragon = new Dragon(this, 32 * 16, 28 * 16, this.player).setImmovable(true);
         this.physics.add.collider(this.player, this.dragon);
 
         // follow

@@ -10,6 +10,8 @@ export class LoadingScene extends Scene {
     }
 
     preload() {
+        this.load.spritesheet('heart', 'assets/sprites/heart.png', { frameWidth: 16, frameHeight: 16 });
+
         this.load.atlas('girl',
             'assets/sprites/girl.png',
             'assets/sprites/girl.json',
@@ -22,6 +24,11 @@ export class LoadingScene extends Scene {
         this.load.atlas('dragon',
             'assets/sprites/dragon.png',
             'assets/sprites/dragon.json',
+        );
+
+        this.load.atlas('dragonAttack',
+            'assets/sprites/dragon-attack.png',
+            'assets/sprites/dragon-attack.json',
         );
 
         this.load.audio({ key: 'dragonHit1', url: ['assets/audio/dragon/dragon-hit1.mp3'] });

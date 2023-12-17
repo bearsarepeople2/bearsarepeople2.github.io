@@ -6,6 +6,7 @@ export class Player extends Actor {
     private keyA: Phaser.Input.Keyboard.Key;
     private keyS: Phaser.Input.Keyboard.Key;
     private keyD: Phaser.Input.Keyboard.Key;
+    private hearts: Phaser.GameObjects.Image[] = []
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'girl');
@@ -18,6 +19,7 @@ export class Player extends Actor {
 
         this.initAnimations()
         this.initAttack()
+        this.initHearts();
     }
 
     update(): void {
@@ -57,6 +59,17 @@ export class Player extends Actor {
         // if (this.actorState === 'idle') {
         //     this.anims.play('playerIdle', true);
         // }
+    }
+
+    initHearts() {
+        for (let index = 0; index < this.hp; index++) {
+            this.hearts.push(this.scene.add.image(20 + index * 20, 280, 'heart', 0));
+            this.hearts[index].setScrollFactor(0, 0);
+        }
+    }
+
+    postDamageTaken() {
+        this.hearts.pop()?.destroy();
     }
 
     initAnimations() {
@@ -170,13 +183,13 @@ export class Player extends Actor {
             let attackingHitboxX = 16 * Math.cos(attackAngle)
             let attackingHitboxY = 16 * Math.sin(attackAngle)
 
-            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x + attackingHitboxX, this.y + attackingHitboxY, 36, 36, 0xff0000, 0.5).setOrigin(0.5, 0.5)
+            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x + attackingHitboxX, this.y + attackingHitboxY, 28, 28, 0xff0000, 0.5).setOrigin(0.5, 0.5)
 
             this.scene.add.existing(rect);
             this.scene.physics.add.existing(rect, false)
 
             // console.log([arc, pointer.position.x, pointer.position.y])
-            this.scene.game.events.emit(EVENTS_NAME.playerAttack, this, rect);
+            this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
 
             let postionFromPlayerX = pointer.position.x - (this.scene.cameras.main.width / 2)
             let postionFromPlayerY = pointer.position.y - (this.scene.cameras.main.height / 2)
