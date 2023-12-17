@@ -166,9 +166,11 @@ export class Player extends Actor {
             let attackAngle = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY)
 
             // The angle was in reverse idk why so this reverses it
-            attackAngle = Math.abs(Phaser.Math.RadToDeg(Phaser.Math.Angle.CounterClockwise(attackAngle)) - 360)
+            // attackAngle = Math.abs(Phaser.Math.RadToDeg(Phaser.Math.Angle.CounterClockwise(attackAngle)) - 360)
+            let attackingHitboxX = 16 * Math.cos(attackAngle)
+            let attackingHitboxY = 16 * Math.sin(attackAngle)
 
-            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 32, 48, 0xff0000, 0.5).setOrigin(0.5, 1).setAngle(attackAngle)
+            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x + attackingHitboxX, this.y + attackingHitboxY, 36, 36, 0xff0000, 0.5).setOrigin(0.5, 0.5)
 
             this.scene.add.existing(rect);
             this.scene.physics.add.existing(rect, false)
@@ -200,6 +202,9 @@ export class Player extends Actor {
                 this.isAttacking = true
                 this.anims.play('playerAttackDown', true);
             }
+
+            let sfx = this.scene.sound.add('girlAttack' + Phaser.Math.Between(1, 2));
+            sfx.setVolume(0.1).play();
         });
     }
 }

@@ -6,6 +6,7 @@ export class Actor extends Physics.Arcade.Sprite {
     protected damage = 10;
     protected speed = 120;
     protected isAttacking = false;
+    protected hitAudio: string[] = [];
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
         super(scene, x, y, texture, frame);
@@ -19,10 +20,7 @@ export class Actor extends Physics.Arcade.Sprite {
     }
 
     playerAttackHandler(player, damageArea) {
-        console.log([damageArea, this])
-
         this.scene.physics.overlap(this, damageArea, () => {
-            console.log('hit!')
             this.takeDamage(player.damage)
         })
     }
@@ -60,8 +58,15 @@ export class Actor extends Physics.Arcade.Sprite {
     takeDamage(damage: integer) {
         this.hp -= damage
 
+        this.setTintFill(0xffffff)
+
+        setTimeout(() => { this.clearTint() }, 100);
+
+        let sfx = this.scene.sound.add('dragonHit' + Phaser.Math.Between(1, 3));
+        sfx.play();
+
         if (this.hp < 1) {
-            alert('died.')
+            console.log('dragon dead')
         }
     }
 

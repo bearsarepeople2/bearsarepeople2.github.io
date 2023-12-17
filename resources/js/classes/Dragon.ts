@@ -5,6 +5,11 @@ export class Dragon extends Actor {
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'dragon');
         this.initAnimations()
+        this.hitAudio = [
+            'dragonHit1',
+            'dragonHit2',
+            'dragonHit3',
+        ]
     }
 
     update(): void {
