@@ -19,6 +19,12 @@ export class LoadingScene extends Scene {
 
         this.load.audio({ key: 'girlAttack1', url: ['assets/audio/girl/girl-attack1.wav'] });
         this.load.audio({ key: 'girlAttack2', url: ['assets/audio/girl/girl-attack2.wav'] });
+        this.load.audio({ key: 'girlGrunt1', url: ['assets/audio/girl/girl-grunt1.mp3'] });
+        this.load.audio({ key: 'girlGrunt2', url: ['assets/audio/girl/girl-grunt2.mp3'] });
+        this.load.audio({ key: 'girlGrunt3', url: ['assets/audio/girl/girl-grunt3.mp3'] });
+        this.load.audio({ key: 'girlGrunt4', url: ['assets/audio/girl/girl-grunt4.mp3'] });
+        this.load.audio({ key: 'girlGrunt5', url: ['assets/audio/girl/girl-grunt5.mp3'] });
+        this.load.audio({ key: 'girlGrunt6', url: ['assets/audio/girl/girl-grunt6.mp3'] });
 
 
         this.load.atlas('dragon',

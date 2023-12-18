@@ -10,6 +10,14 @@ export class Player extends Actor {
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'girl');
+        this.hitAudio = [
+            'girlGrunt1',
+            'girlGrunt2',
+            'girlGrunt3',
+            'girlGrunt4',
+            'girlGrunt5',
+            'girlGrunt6',
+        ]
 
         // KEYS
         this.keyW = this.scene.input.keyboard.addKey('W');
@@ -69,7 +77,19 @@ export class Player extends Actor {
     }
 
     postDamageTaken() {
-        this.hearts.pop()?.destroy();
+        let heart = this.hearts.pop();
+
+        this.scene.tweens.add({
+            targets: heart,
+            alpha: 0,
+            ease: 'Cubic.easeOut',
+            duration: 100,
+            repeat: 3,
+            yoyo: true,
+            onComplete: () => {
+                heart?.destroy();
+            },
+        });
     }
 
     initAnimations() {
@@ -216,8 +236,10 @@ export class Player extends Actor {
                 this.anims.play('playerAttackDown', true);
             }
 
-            let sfx = this.scene.sound.add('girlAttack' + Phaser.Math.Between(1, 2));
-            sfx.setVolume(0.1).play();
+            let sfx1 = this.scene.sound.add('girlAttack' + Phaser.Math.Between(1, 2));
+            let sfx2 = this.scene.sound.add('girlGrunt' + Phaser.Math.Between(1, 6));
+            sfx1.setVolume(0.1).play();
+            sfx2.setVolume(0.1).play();
         });
     }
 }

@@ -29,9 +29,15 @@ export class Actor extends Physics.Arcade.Sprite {
     takeDamage(damage: integer) {
         this.hp -= damage
 
-        this.setTintFill(0xffffff)
+        for (let index = 0; index < 3; index++) {
+            setTimeout(() => {
+                this.setTintFill(0xffffff)
+                setTimeout(() => {
+                    this.clearTint()
+                }, index + 1 * 30)
 
-        setTimeout(() => { this.clearTint() }, 100);
+            }, index * 60);
+        }
 
         if (this.hitAudio.length > 0) {
             let sfx = this.scene.sound.add(this.hitAudio[Phaser.Math.Between(0, this.hitAudio.length - 1)]);
