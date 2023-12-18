@@ -196,8 +196,6 @@ export class Player extends Actor {
 
             let attackAngle = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY)
 
-            // The angle was in reverse idk why so this reverses it
-            // attackAngle = Math.abs(Phaser.Math.RadToDeg(Phaser.Math.Angle.CounterClockwise(attackAngle)) - 360)
             let attackingHitboxX = 16 * Math.cos(attackAngle)
             let attackingHitboxY = 16 * Math.sin(attackAngle)
 
@@ -206,7 +204,6 @@ export class Player extends Actor {
             this.scene.add.existing(rect);
             this.scene.physics.add.existing(rect, false)
 
-            // console.log([arc, pointer.position.x, pointer.position.y])
             this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
 
             let postionFromPlayerX = pointer.position.x - (this.scene.cameras.main.width / 2)

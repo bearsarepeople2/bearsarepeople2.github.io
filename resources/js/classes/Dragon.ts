@@ -71,20 +71,28 @@ export class Dragon extends Actor {
     }
 
     initAttack(): void {
-        setInterval(() => {
-            this.anims.play('dragonAttackIndicate', true);
+        this.scene.time.addEvent({
+            delay: 5000,
+            loop: true,
+            callback: () => {
+                this.anims.play('dragonAttackIndicate', true);
 
-            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 100, 100, 0xff0000, 0).setOrigin(0.5, 0.5)
+                let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 100, 100, 0xff0000, 0).setOrigin(0.5, 0.5)
 
-            this.scene.add.existing(rect);
-            this.scene.physics.add.existing(rect, false)
+                this.scene.add.existing(rect);
+                this.scene.physics.add.existing(rect, false)
 
-            setTimeout(() => {
-                this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
-                this.anims.play('dragonAttackSwing', true);
-                rect.destroy()
-            }, 1000)
-        }, 5000)
+                this.scene.time.addEvent({
+                    delay: 1000,
+                    loop: false,
+                    callback: () => {
+                        this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
+                        this.anims.play('dragonAttackSwing', true);
+                        rect.destroy()
+                    }
+                });
+            }
+        });
     }
 
     initHealthBar() {

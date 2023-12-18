@@ -22,7 +22,8 @@ export class Actor extends Physics.Arcade.Sprite {
         if (this === actor) {
             return // cant hit yourself
         }
-        this.scene.physics.overlap(this, damageArea, () => {
+
+        actor.scene.physics.overlap(this, damageArea, () => {
             this.takeDamage(actor.damage)
         })
     }
@@ -48,8 +49,9 @@ export class Actor extends Physics.Arcade.Sprite {
         this.postDamageTaken()
 
         if (this.hp < 1) {
-            console.log(this.constructor.name + ' died.')
-            this.scene.scene.restart();
+            console.log(this.constructor.name + ' died.');
+
+            this.scene.scene.start('loading-scene')
         }
     }
 
