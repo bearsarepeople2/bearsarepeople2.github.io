@@ -63,10 +63,6 @@ export class Player extends Actor {
 
             this.body.velocity.x = this.speed;
         }
-
-        // if (this.actorState === 'idle') {
-        //     this.anims.play('playerIdle', true);
-        // }
     }
 
     initHearts() {
@@ -189,6 +185,8 @@ export class Player extends Actor {
             if (event.key.includes('Attack')) {
                 this.isAttacking = false
             }
+
+            this.anims.play('playerIdle', false);
         })
 
         this.scene.input.on('pointerdown', (pointer) => {
@@ -203,7 +201,7 @@ export class Player extends Actor {
             let attackingHitboxX = 16 * Math.cos(attackAngle)
             let attackingHitboxY = 16 * Math.sin(attackAngle)
 
-            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x + attackingHitboxX, this.y + attackingHitboxY, 28, 28, 0xff0000, 0.5).setOrigin(0.5, 0.5)
+            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x + attackingHitboxX, this.y + attackingHitboxY, 28, 28, 0xff0000, 0).setOrigin(0.5, 0.5)
 
             this.scene.add.existing(rect);
             this.scene.physics.add.existing(rect, false)

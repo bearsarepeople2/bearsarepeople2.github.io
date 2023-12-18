@@ -2,6 +2,7 @@ import { Physics } from 'phaser';
 import { EVENTS_NAME } from '../enums/consts';
 
 export class Actor extends Physics.Arcade.Sprite {
+    protected maxHp = 3;
     protected hp = 3;
     protected damage = 1;
     protected speed = 120;
@@ -48,6 +49,7 @@ export class Actor extends Physics.Arcade.Sprite {
 
         if (this.hp < 1) {
             console.log(this.constructor.name + ' died.')
+            this.scene.scene.restart();
         }
     }
 

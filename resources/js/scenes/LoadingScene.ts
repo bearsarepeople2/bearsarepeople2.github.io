@@ -10,6 +10,7 @@ export class LoadingScene extends Scene {
     }
 
     preload() {
+        this.load.bitmapFont('atariFont', 'assets/fonts/atari-classic.png', 'assets/fonts/atari-classic.xml');
         this.load.spritesheet('heart', 'assets/sprites/heart.png', { frameWidth: 16, frameHeight: 16 });
 
         this.load.atlas('girl',
