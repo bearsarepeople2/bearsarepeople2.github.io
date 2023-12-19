@@ -38,6 +38,16 @@ export class LoadingScene extends Scene {
             'assets/sprites/dragon-attack.json',
         );
 
+        this.load.atlas('fireStart',
+            'assets/sprites/fire-start.png',
+            'assets/sprites/fire-start.json',
+        );
+
+        this.load.atlas('fireLoop',
+            'assets/sprites/fire-loop.png',
+            'assets/sprites/fire-loop.json',
+        );
+
         this.load.audio({ key: 'dragonHit1', url: ['assets/audio/dragon/dragon-hit1.mp3'] });
         this.load.audio({ key: 'dragonHit2', url: ['assets/audio/dragon/dragon-hit2.mp3'] });
         this.load.audio({ key: 'dragonHit3', url: ['assets/audio/dragon/dragon-hit3.mp3'] });

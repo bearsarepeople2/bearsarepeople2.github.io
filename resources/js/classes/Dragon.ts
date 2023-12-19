@@ -1,5 +1,6 @@
 import { EVENTS_NAME } from '../enums/consts';
 import { Actor } from './Actor';
+import { Fire } from './Fire';
 import { Player } from './Player';
 
 export class Dragon extends Actor {
@@ -65,34 +66,85 @@ export class Dragon extends Actor {
 
         this.anims.play('dragonIdle', true);
 
-        this.on('animationcomplete', function (event) {
+        this.on('animationcomplete', function () {
             this.anims.play('dragonIdle', true);
         })
     }
 
     initAttack(): void {
         this.scene.time.addEvent({
-            delay: 5000,
+            delay: 2000,
             loop: true,
             callback: () => {
-                this.anims.play('dragonAttackIndicate', true);
-
-                let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 100, 100, 0xff0000, 0).setOrigin(0.5, 0.5)
-
-                this.scene.add.existing(rect);
-                this.scene.physics.add.existing(rect, false)
-
-                this.scene.time.addEvent({
-                    delay: 1000,
-                    loop: false,
-                    callback: () => {
-                        this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
-                        this.anims.play('dragonAttackSwing', true);
-                        rect.destroy()
-                    }
-                });
+                if (Phaser.Math.Between(1, 2) == 1) {
+                    this.clawAttack()
+                } else {
+                    this.fireAttack()
+                }
             }
         });
+    }
+
+    clawAttack() {
+        this.anims.play('dragonAttackIndicate', true);
+
+        let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 100, 100, 0xff0000, 0).setOrigin(0.5, 0.5)
+
+        this.scene.add.existing(rect);
+        this.scene.physics.add.existing(rect, false)
+
+        this.scene.time.addEvent({
+            delay: 1000,
+            loop: false,
+            callback: () => {
+                this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
+                this.anims.play('dragonAttackSwing', true);
+                rect.destroy()
+            }
+        });
+    }
+
+    fireAttack() {
+        let line = new Phaser.Geom.Line(this.x, this.y, this.player.x, this.player.y)
+
+        line = Phaser.Geom.Line.Extend(line, 0, 40);
+
+        let points = Phaser.Geom.Line.BresenhamPoints(line, 24);
+        points.shift()  // remove the first point becuase it covers the monster
+
+        for (let index = 0; index < points.length; index++) {
+            if (points[index].x == undefined) return
+
+            this.scene.time.addEvent({
+                delay: index * 100,
+                loop: false,
+                callback: () => {
+                    let fire = new Fire(this.scene, points[index].x, points[index].y, 'fireStart', 'fire1');
+
+                    fire.anims.play('fireStart')
+
+                    this.scene.time.addEvent({
+                        delay: 1000,
+                        loop: false,
+                        callback: () => {
+                            fire.anims.play('fireLoop');
+                            this.scene.physics.add.overlap(this.player, fire, () => {
+                                fire.destroy()
+                                this.player.takeDamage(1)
+                            })
+
+                            this.scene.time.addEvent({
+                                delay: 3000,
+                                loop: false,
+                                callback: () => {
+                                    fire.destroy()
+                                },
+                            });
+                        },
+                    });
+                }
+            });
+        }
     }
 
     initHealthBar() {
@@ -104,9 +156,9 @@ export class Dragon extends Actor {
         border.lineWidth = 2;
         border.strokeColor = 0x000000;
 
-        this.scene.add.existing(this.hpBar);
-        this.scene.add.existing(border);
+        this.scene.add.existing(this.hpBar).setDepth(10);
+        this.scene.add.existing(border).setDepth(10);
 
-        this.scene.add.bitmapText(114, 18, 'atariFont', 'Name, A Title For Boss', 8).setScrollFactor(0, 0);
+        this.scene.add.bitmapText(114, 18, 'atariFont', 'Name, A Title For Boss', 8).setScrollFactor(0, 0).setDepth(10);
     }
 }
