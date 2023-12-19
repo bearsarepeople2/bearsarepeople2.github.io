@@ -1,5 +1,6 @@
 import { Physics } from 'phaser';
 import { EVENTS_NAME } from '../enums/consts';
+import { ForestScene } from '../scenes/ForestScene';
 
 export class Actor extends Physics.Arcade.Sprite {
     protected maxHp = 3;
@@ -13,7 +14,7 @@ export class Actor extends Physics.Arcade.Sprite {
         super(scene, x, y, texture, frame);
         scene.add.existing(this);
         scene.physics.add.existing(this);
-        this.body.setMaxSpeed(this.speed);
+        this.getBody().setMaxSpeed(this.speed);
 
         this.scene.game.events.on(EVENTS_NAME.attack, this.attackHandler, this);
     }
@@ -51,7 +52,7 @@ export class Actor extends Physics.Arcade.Sprite {
         if (this.hp < 1) {
             console.log(this.constructor.name + ' died.');
 
-            this.scene.scene.start('loading-scene')
+            this.scene.restart()
         }
     }
 

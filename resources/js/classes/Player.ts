@@ -7,6 +7,9 @@ export class Player extends Actor {
     private keyS: Phaser.Input.Keyboard.Key;
     private keyD: Phaser.Input.Keyboard.Key;
     private hearts: Phaser.GameObjects.Image[] = []
+    private walkSfx1: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
+    private walkSfx2: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
+    private walkSfx3: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'girl');
@@ -25,6 +28,10 @@ export class Player extends Actor {
         this.keyS = this.scene.input.keyboard.addKey('S');
         this.keyD = this.scene.input.keyboard.addKey('D');
 
+        this.walkSfx1 = this.scene.sound.add('girlWalk1');
+        this.walkSfx2 = this.scene.sound.add('girlWalk2');
+        this.walkSfx3 = this.scene.sound.add('girlWalk3');
+
         this.initAnimations()
         this.initAttack()
         this.initHearts();
@@ -39,6 +46,7 @@ export class Player extends Actor {
             }
 
             this.body.velocity.y = -this.speed;
+            this.playWalkSfx()
         }
         if (this.keyA?.isDown) {
             if (this.keyW?.isUp && this.keyS.isUp && !this.isAttacking) {
@@ -47,6 +55,7 @@ export class Player extends Actor {
             }
 
             this.body.velocity.x = -this.speed;
+            this.playWalkSfx()
         }
         if (this.keyS?.isDown) {
             if (!this.isAttacking) {
@@ -54,6 +63,7 @@ export class Player extends Actor {
             }
 
             this.body.velocity.y = this.speed;
+            this.playWalkSfx()
         }
         if (this.keyD?.isDown) {
             if (this.keyW?.isUp && this.keyS.isUp && !this.isAttacking) {
@@ -62,7 +72,25 @@ export class Player extends Actor {
             }
 
             this.body.velocity.x = this.speed;
+            this.playWalkSfx()
         }
+    }
+
+    playWalkSfx() {
+        if (this.walkSfx1.isPlaying || this.walkSfx3.isPlaying || this.walkSfx3.isPlaying) return
+
+        switch (Phaser.Math.Between(1, 3)) {
+            case 1:
+                this.walkSfx1.setVolume(0.02).play();
+                break;
+            case 1:
+                this.walkSfx2.setVolume(0.02).play();
+                break;
+            case 1:
+                this.walkSfx3.setVolume(0.02).play();
+                break;
+        }
+
     }
 
     initHearts() {
@@ -233,8 +261,8 @@ export class Player extends Actor {
 
             let sfx1 = this.scene.sound.add('girlAttack' + Phaser.Math.Between(1, 2));
             let sfx2 = this.scene.sound.add('girlGrunt' + Phaser.Math.Between(1, 6));
-            sfx1.setVolume(0.1).play();
-            sfx2.setVolume(0.1).play();
+            sfx1.setVolume(0.05).play();
+            sfx2.setVolume(0.2).play();
         });
     }
 }

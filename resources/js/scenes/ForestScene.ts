@@ -5,6 +5,7 @@ import { Dragon } from '../classes/Dragon';
 export class ForestScene extends Scene {
     private player: Player;
     private dragon: Dragon;
+    private music: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound
 
     constructor() {
         super('forest-scene');
@@ -21,9 +22,9 @@ export class ForestScene extends Scene {
     }
 
     create(): void {
-        let music = this.sound.add('bgMusic1');
-        music.loop = true
-        // music.setVolume(0.01).play();
+        this.music = this.sound.add('bgMusic1');
+        this.music.loop = true
+        this.music.setVolume(0.01).play();
 
         let forestTiles = this.add.tilemap('forest');
         let grassMap = forestTiles.addTilesetImage('grass', 'grassTiles', 16, 16);
@@ -56,6 +57,11 @@ export class ForestScene extends Scene {
 
         // follow
         this.cameras.main.startFollow(this.player);
+    }
+
+    restart() {
+        this.music.stop();
+        this.scene.start('loading-scene');
     }
 
     update(): void {
