@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { ForestScene } from './scenes/ForestScene';
 import { LoadingScene } from './scenes/LoadingScene';
 import { OpeningScene } from './scenes/OpeningScene';
+import { DeathScene } from './scenes/DeathScene';
 
 var config = {
     type: Phaser.AUTO,
@@ -19,7 +20,7 @@ var config = {
             debug: true
         }
     },
-    scene: [LoadingScene, OpeningScene, ForestScene],
+    scene: [LoadingScene, OpeningScene, ForestScene, DeathScene],
 };
 
 new Phaser.Game(config);

@@ -51,14 +51,19 @@ export class Actor extends Physics.Arcade.Sprite {
 
         if (this.hp < 1) {
             console.log(this.constructor.name + ' died.');
-
-            this.scene.restart()
+            this.handleDeath()
         }
+    }
+
+    handleDeath(): void { }
+
+    getSpeed(): integer {
+        return this.speed;
     }
 
     postDamageTaken(): void { }
 
-    protected getBody(): Physics.Arcade.Body {
+    getBody(): Physics.Arcade.Body {
         return this.body as Physics.Arcade.Body;
     }
 }

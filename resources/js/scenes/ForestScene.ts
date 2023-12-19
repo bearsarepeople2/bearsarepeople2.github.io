@@ -41,15 +41,12 @@ export class ForestScene extends Scene {
         let upperlayerLayer = forestTiles.createLayer('upperlayer', [propMap, treeMap]);
 
         // Player
-        this.player = new Player(this, 24 * 16, 37 * 16);
+        this.player = new Player(this, 296, 680);
+
         this.physics.add.collider(this.player, mapLayer);
         this.physics.add.collider(this.player, pathLayer);
         this.physics.add.collider(this.player, overlayerLayer);
         this.physics.add.collider(this.player, upperlayerLayer);
-        mapLayer?.setCollisionByProperty({ collides: true });
-        pathLayer?.setCollisionByProperty({ collides: true });
-        overlayerLayer?.setCollisionByProperty({ collides: true });
-        upperlayerLayer?.setCollisionByProperty({ collides: true });
         upperlayerLayer?.setDepth(1)
 
         // Dragons
@@ -58,12 +55,42 @@ export class ForestScene extends Scene {
         this.physics.add.collider(this.player, this.dragon);
 
         // follow
-        this.cameras.main.startFollow(this.player);
+        this.cameras.main.centerOn(this.dragon.x, this.dragon.y);
+
+        this.time.addEvent({
+            delay: 2000,
+            callback: () => {
+                this.cameras.main.pan(this.player.x, this.player.y, 1000)
+            }
+        });
+
+        this.time.addEvent({
+            delay: 4000,
+            callback: () => {
+                this.cameras.main.startFollow(this.player);
+                this.player.anims.play({ key: 'playerUp', repeat: -1, });
+                this.player.setVelocityY(-this.player.getSpeed())
+            }
+        });
+
+        this.time.addEvent({
+            delay: 4750,
+            callback: () => {
+                this.player.setVelocityY(0)
+                this.player.setEnabled(true);
+                this.player.anims.play('playerIdle');
+                mapLayer?.setCollisionByProperty({ collides: true });
+                pathLayer?.setCollisionByProperty({ collides: true });
+                overlayerLayer?.setCollisionByProperty({ collides: true });
+                upperlayerLayer?.setCollisionByProperty({ collides: true });
+            }
+        });
+
     }
 
     restart() {
         this.music.stop();
-        this.scene.start('loading-scene');
+        this.scene.start('death-scene');
     }
 
     update(): void {

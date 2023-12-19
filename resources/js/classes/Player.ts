@@ -10,6 +10,7 @@ export class Player extends Actor {
     private walkSfx1: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private walkSfx2: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private walkSfx3: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
+    private enabled: boolean = false
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, 'girl');
@@ -38,6 +39,8 @@ export class Player extends Actor {
     }
 
     update(): void {
+        if (!this.enabled) return
+
         this.getBody().setVelocity(0);
 
         if (this.keyW?.isDown) {
@@ -220,6 +223,8 @@ export class Player extends Actor {
         })
 
         this.scene.input.on('pointerdown', (pointer) => {
+            if (!this.enabled) return
+
             if (pointer.button !== 0) {
                 return
             }
@@ -272,5 +277,13 @@ export class Player extends Actor {
             sfx1.setVolume(0.05).play();
             sfx2.setVolume(0.2).play();
         });
+    }
+
+    handleDeath(): void {
+        this.scene.restart();
+    }
+
+    setEnabled(bool: boolean): void {
+        this.enabled = bool;
     }
 }
