@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { ForestScene } from './scenes/ForestScene';
 import { LoadingScene } from './scenes/LoadingScene';
+import { OpeningScene } from './scenes/OpeningScene';
 
 var config = {
     type: Phaser.AUTO,
@@ -18,12 +19,7 @@ var config = {
             debug: true
         }
     },
-    scene: [LoadingScene, ForestScene],
-    // scene: {
-    //     preload: preload,
-    //     create: create,
-    //     update: update
-    // },
+    scene: [LoadingScene, OpeningScene, ForestScene],
 };
 
 new Phaser.Game(config);
