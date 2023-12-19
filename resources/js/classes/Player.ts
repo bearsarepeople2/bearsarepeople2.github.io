@@ -68,7 +68,7 @@ export class Player extends Actor {
     initHearts() {
         for (let index = 0; index < this.hp; index++) {
             this.hearts.push(this.scene.add.image(20 + index * 20, 280, 'heart', 0));
-            this.hearts[index].setScrollFactor(0, 0);
+            this.hearts[index].setScrollFactor(0, 0).setDepth(10);
         }
     }
 
