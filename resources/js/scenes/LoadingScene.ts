@@ -6,7 +6,7 @@ export class LoadingScene extends Scene {
     }
 
     create(): void {
-        this.scene.start('opening-scene');
+        this.scene.start('forest-scene');
     }
 
     preload() {

@@ -45,7 +45,7 @@ export class Player extends Actor {
                 this.anims.play('playerUp', true);
             }
 
-            this.body.velocity.y = -this.speed;
+            this.getBody().velocity.y = -this.speed;
             this.playWalkSfx()
         }
         if (this.keyA?.isDown) {
@@ -54,7 +54,7 @@ export class Player extends Actor {
                 this.setFlipX(true);
             }
 
-            this.body.velocity.x = -this.speed;
+            this.getBody().velocity.x = -this.speed;
             this.playWalkSfx()
         }
         if (this.keyS?.isDown) {
@@ -62,7 +62,7 @@ export class Player extends Actor {
                 this.anims.play('playerDown', true);
             }
 
-            this.body.velocity.y = this.speed;
+            this.getBody().velocity.y = this.speed;
             this.playWalkSfx()
         }
         if (this.keyD?.isDown) {
@@ -71,7 +71,7 @@ export class Player extends Actor {
                 this.setFlipX(false);
             }
 
-            this.body.velocity.x = this.speed;
+            this.getBody().velocity.x = this.speed;
             this.playWalkSfx()
         }
     }
@@ -218,6 +218,10 @@ export class Player extends Actor {
         })
 
         this.scene.input.on('pointerdown', (pointer) => {
+            if (pointer.button !== 0) {
+                return
+            }
+
             if (this.isAttacking) {
                 return
             }
@@ -229,10 +233,12 @@ export class Player extends Actor {
 
             let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x + attackingHitboxX, this.y + attackingHitboxY, 28, 28, 0xff0000, 0).setOrigin(0.5, 0.5)
 
-            this.scene.add.existing(rect);
+            // this.scene.add.existing(rect);
             this.scene.physics.add.existing(rect, false)
 
             this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
+
+            rect.destroy()
 
             let postionFromPlayerX = pointer.position.x - (this.scene.cameras.main.width / 2)
             let postionFromPlayerY = pointer.position.y - (this.scene.cameras.main.height / 2)

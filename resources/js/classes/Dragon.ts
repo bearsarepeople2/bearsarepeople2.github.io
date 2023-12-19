@@ -88,7 +88,7 @@ export class Dragon extends Actor {
     clawAttack() {
         this.anims.play('dragonAttackIndicate', true);
 
-        let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 100, 100, 0xff0000, 0).setOrigin(0.5, 0.5)
+        let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 110, 120, 0xff0000, 0).setOrigin(0.5, 0.5)
 
         this.scene.add.existing(rect);
         this.scene.physics.add.existing(rect, false)
@@ -107,9 +107,9 @@ export class Dragon extends Actor {
     fireAttack() {
         let line = new Phaser.Geom.Line(this.x, this.y, this.player.x, this.player.y)
 
-        line = Phaser.Geom.Line.Extend(line, 0, 40);
+        line = Phaser.Geom.Line.Extend(line, 0, 80);
 
-        let points = Phaser.Geom.Line.BresenhamPoints(line, 24);
+        let points = Phaser.Geom.Line.BresenhamPoints(line, 36);
         points.shift()  // remove the first point becuase it covers the monster
 
         for (let index = 0; index < points.length; index++) {

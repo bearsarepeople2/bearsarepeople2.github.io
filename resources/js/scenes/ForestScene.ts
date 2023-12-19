@@ -52,7 +52,8 @@ export class ForestScene extends Scene {
         upperlayerLayer?.setDepth(1)
 
         // Dragons
-        this.dragon = new Dragon(this, 25 * 16, 27 * 16, this.player).setImmovable(true);
+        this.dragon = new Dragon(this, 25 * 16, 27 * 16, this.player).setImmovable(true).setScale(2).setSize(30, 36).setOffset(7, 0).setDepth(1);
+
         this.physics.add.collider(this.player, this.dragon);
 
         // follow
