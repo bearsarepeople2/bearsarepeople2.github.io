@@ -24,7 +24,7 @@ export class ForestScene extends Scene {
     create(): void {
         this.music = this.sound.add('bgMusic1');
         this.music.loop = true
-        this.music.setVolume(0.01).play();
+        // this.music.setVolume(0.01).play();
 
         let forestTiles = this.add.tilemap('forest');
         let grassMap = forestTiles.addTilesetImage('grass', 'grassTiles', 16, 16);

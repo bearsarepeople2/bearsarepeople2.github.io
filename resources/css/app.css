@@ -2,3 +2,8 @@ body {
     margin: 0px;
     background-color: #2F4938;
 }
+
+canvas {
+    border-right: 8px solid #ac4918;
+    border-left: 8px solid #ac4918;
+}
