@@ -159,6 +159,6 @@ export class Dragon extends Actor {
         this.scene.add.existing(this.hpBar).setDepth(10);
         this.scene.add.existing(border).setDepth(10);
 
-        this.scene.add.bitmapText(114, 18, 'atariFont', 'Name, A Title For Boss', 8).setScrollFactor(0, 0).setDepth(10);
+        this.scene.add.bitmapText(114, 18, 'atariFont', 'Snarl, The Forest Terror', 8).setScrollFactor(0, 0).setDepth(10);
     }
 }

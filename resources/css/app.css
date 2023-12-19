@@ -1,9 +1,10 @@
 body {
     margin: 0px;
-    background-color: #2F4938;
+    background-color: black;
+    display: flex;
 }
 
 canvas {
-    border-right: 8px solid #ac4918;
-    border-left: 8px solid #ac4918;
+    border-right: 8px solid #a61717;
+    border-left: 8px solid #a61717;
 }

@@ -37,7 +37,7 @@ export class OpeningScene extends Scene {
             'Hello',
             'My name is Ix.',
             'I need your help.',
-            'The dragon <name> destroyed my home.',
+            'The dragon Snarl destroyed my home.',
             '...',
             'He must die.',
         ];
@@ -59,7 +59,6 @@ export class OpeningScene extends Scene {
         let bitmapText = this.add.bitmapText(this.player.x, this.player.y + 50, 'atariFont', this.text[this.textIndex], 8).setOrigin(0.5, 0.5);
 
         keySpace?.on('down', () => {
-            console.log('test')
             if (this.textIndex >= this.text.length - 1) {
                 this.sceneTransition()
                 return
@@ -78,8 +77,16 @@ export class OpeningScene extends Scene {
             ease: 'Linear',
             duration: 1000,
             yoyo: false,
-            onComplete: () => {
-                this.scene.start('forest-scene');
+            onStart: () => {
+                this.cameras.main.fadeOut(1000, 0, 0, 0);
+
+                this.time.addEvent({
+                    delay: 1000,
+                    callback: () => {
+                        this.scene.start('forest-scene')
+                    }
+                });
+
             }
         });
 

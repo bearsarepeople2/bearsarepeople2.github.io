@@ -22,6 +22,7 @@ export class ForestScene extends Scene {
     }
 
     create(): void {
+        this.cameras.main.fadeIn(1000, 0, 0, 0);
         this.music = this.sound.add('bgMusic1');
         this.music.loop = true
         this.music.setVolume(0.01).play();

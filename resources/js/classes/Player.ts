@@ -206,6 +206,8 @@ export class Player extends Actor {
             }),
             frameRate: 16,
         });
+
+        this.anims.play('playerIdle', true);
     }
 
     initAttack(): void {
