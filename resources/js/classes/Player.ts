@@ -86,10 +86,10 @@ export class Player extends Actor {
             case 1:
                 this.walkSfx1.setVolume(0.02).play();
                 break;
-            case 1:
+            case 2:
                 this.walkSfx2.setVolume(0.02).play();
                 break;
-            case 1:
+            case 3:
                 this.walkSfx3.setVolume(0.02).play();
                 break;
         }

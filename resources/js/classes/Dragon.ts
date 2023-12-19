@@ -8,12 +8,16 @@ export class Dragon extends Actor {
     private hpBar: Phaser.GameObjects.Rectangle;
     protected maxHp = 10;
     protected hp = 10;
+    protected agro: boolean = false;
+    protected agroRadius = 120;
 
     constructor(scene: Phaser.Scene, x: number, y: number, player: Player) {
         super(scene, x, y, 'dragon');
         this.player = player
         this.initAnimations()
+        this.initAgro()
         this.initAttack()
+
         this.initHealthBar()
         this.hitAudio = [
             'dragonHit1',
@@ -76,6 +80,8 @@ export class Dragon extends Actor {
             delay: 2000,
             loop: true,
             callback: () => {
+                if (!this.agro) return
+
                 if (Phaser.Math.Between(1, 2) == 1) {
                     this.clawAttack()
                 } else {
@@ -145,6 +151,16 @@ export class Dragon extends Actor {
                 }
             });
         }
+    }
+
+    initAgro() {
+        let circle = new Phaser.GameObjects.Arc(this.scene, this.x, this.y, this.agroRadius, 0, 360, false, 0xff0000, 1)
+
+        this.scene.physics.add.existing(circle)
+
+        this.scene.physics.add.overlap(this.player, circle, () => {
+            this.agro = true
+        })
     }
 
     initHealthBar() {
