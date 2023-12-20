@@ -41,6 +41,16 @@ export class LoadingScene extends Scene {
             'assets/sprites/dragon-attack.json',
         );
 
+        this.load.atlas('dragonFire',
+            'assets/sprites/dragon-fire.png',
+            'assets/sprites/dragon-fire.json',
+        );
+
+        this.load.atlas('dragonLaunch',
+            'assets/sprites/dragon-launch.png',
+            'assets/sprites/dragon-launch.json',
+        );
+
         this.load.atlas('fireStart',
             'assets/sprites/fire-start.png',
             'assets/sprites/fire-start.json',

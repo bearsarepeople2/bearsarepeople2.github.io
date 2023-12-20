@@ -34,7 +34,7 @@ export class OpeningScene extends Scene {
 
         this.text = [
             '',
-            'Hello',
+            'Hello.',
             'My name is Ix.',
             'I need your help.',
             'The dragon Snarl destroyed my home.',

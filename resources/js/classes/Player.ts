@@ -285,5 +285,13 @@ export class Player extends Actor {
 
     setEnabled(bool: boolean): void {
         this.enabled = bool;
+
+        if (this.enabled) {
+            this.getBody().setMaxSpeed(this.speed);
+        }
+
+        if (!this.enabled) {
+            this.getBody().setMaxSpeed(-1);
+        }
     }
 }

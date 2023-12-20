@@ -41,7 +41,7 @@ export class ForestScene extends Scene {
         let upperlayerLayer = forestTiles.createLayer('upperlayer', [propMap, treeMap]);
 
         // Player
-        this.player = new Player(this, 296, 680);
+        this.player = new Player(this, 296, 680).setImmovable(true);
 
         this.physics.add.collider(this.player, mapLayer);
         this.physics.add.collider(this.player, pathLayer);
@@ -50,7 +50,7 @@ export class ForestScene extends Scene {
         upperlayerLayer?.setDepth(1)
 
         // Dragons
-        this.dragon = new Dragon(this, 25 * 16, 27 * 16, this.player).setImmovable(true).setScale(2).setSize(30, 36).setOffset(7, 0).setDepth(1);
+        this.dragon = new Dragon(this, 25 * 16, 27 * 16, this.player).setImmovable(true).setScale(2).setDepth(1);
 
         this.physics.add.collider(this.player, this.dragon);
 

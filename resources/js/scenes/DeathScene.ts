@@ -49,17 +49,6 @@ export class DeathScene extends Scene {
             }
         });
 
-        this.anims.create({
-            key: 'playerIdle',
-            frames: this.anims.generateFrameNames('girl', {
-                prefix: 'girl',
-                start: 81,
-                end: 86,
-            }),
-            repeat: -1,
-            frameRate: 1,
-        });
-
         this.player = new Phaser.Physics.Arcade.Sprite(this, 0, 0, 'girl').setScale(1)
         this.add.existing(this.player);
         this.player.anims.play('playerIdle')
@@ -67,7 +56,7 @@ export class DeathScene extends Scene {
         this.cameras.main.startFollow(this.player);
 
         this.text = [
-            '...',
+            '',
             'I have failed.',
             '...',
             'No.',
