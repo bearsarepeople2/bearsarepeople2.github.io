@@ -3,6 +3,7 @@ import { ForestScene } from './scenes/ForestScene';
 import { LoadingScene } from './scenes/LoadingScene';
 import { OpeningScene } from './scenes/OpeningScene';
 import { DeathScene } from './scenes/DeathScene';
+import { VictoryScene } from './scenes/VictoryScene';
 
 var config = {
     type: Phaser.AUTO,
@@ -17,10 +18,10 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true
+            debug: false
         }
     },
-    scene: [LoadingScene, OpeningScene, ForestScene, DeathScene],
+    scene: [LoadingScene, OpeningScene, ForestScene, DeathScene, VictoryScene],
 };
 
 new Phaser.Game(config);

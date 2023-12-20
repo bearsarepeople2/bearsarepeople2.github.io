@@ -88,9 +88,14 @@ export class ForestScene extends Scene {
 
     }
 
-    restart() {
+    death() {
         this.music.stop();
         this.scene.start('death-scene');
+    }
+
+    victory() {
+        this.music.stop();
+        this.scene.start('victory-scene');
     }
 
     update(): void {

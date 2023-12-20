@@ -6,8 +6,8 @@ import { Player } from './Player';
 export class Dragon extends Actor {
     private player: Player;
     private hpBar: Phaser.GameObjects.Rectangle;
-    protected maxHp = 10;
-    protected hp = 10;
+    protected maxHp = 50;
+    protected hp = 50;
     protected speed = 40;
     protected agro: boolean = false;
     protected agroRadius = 120;
@@ -257,5 +257,9 @@ export class Dragon extends Actor {
         this.scene.add.existing(border).setDepth(10);
 
         this.scene.add.bitmapText(145, 18, 'atariFont', 'Snarl The Vile', 8).setScrollFactor(0, 0).setDepth(10);
+    }
+
+    handleDeath(): void {
+        this.scene.victory();
     }
 }

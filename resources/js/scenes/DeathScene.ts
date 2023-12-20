@@ -11,14 +11,9 @@ export class DeathScene extends Scene {
     }
 
     create(): void {
-        this.time.addEvent({
-            delay: 2000,
-            callback: () => {
-                this.music = this.sound.add('bgMusicMagic');
-                this.music.loop = true
-                this.music.setVolume(0.1).play();
-            }
-        });
+        this.music = this.sound.add('bgMusicMagic');
+        this.music.loop = true
+        this.music.setVolume(0.1).play();
 
         this.time.addEvent({
             delay: 100,
@@ -82,6 +77,7 @@ export class DeathScene extends Scene {
 
         keySpace?.on('down', () => {
             if (this.textIndex >= this.text.length - 1) {
+                this.music.stop();
                 this.sceneTransition()
                 return
             }
@@ -111,8 +107,6 @@ export class DeathScene extends Scene {
 
             }
         });
-
-        this.music.stop();
     }
 
     update(): void {

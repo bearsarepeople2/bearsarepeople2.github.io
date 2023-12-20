@@ -280,7 +280,7 @@ export class Player extends Actor {
     }
 
     handleDeath(): void {
-        this.scene.restart();
+        this.scene.death();
     }
 
     setEnabled(bool: boolean): void {
