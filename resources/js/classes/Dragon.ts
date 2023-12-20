@@ -33,6 +33,10 @@ export class Dragon extends Actor {
         this.getBody().setVelocity(0)
 
         if (Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y) < this.attackMoveRange) {
+            if (!this.isAttacking) {
+                this.anims.play('dragonWalk', true)
+            }
+
             this.scene.physics.moveToObject(this, this.player, this.speed)
         }
 
@@ -56,6 +60,16 @@ export class Dragon extends Actor {
         });
 
         this.anims.create({
+            key: 'dragonWalk',
+            frames: this.anims.generateFrameNames('dragonWalk', {
+                prefix: 'dragon',
+                start: 1,
+                end: 6,
+            }),
+            frameRate: 6,
+        });
+
+        this.anims.create({
             key: 'dragonAttackIndicate',
             frames: this.anims.generateFrameNames('dragonAttack', {
                 prefix: 'dragon',
@@ -76,8 +90,8 @@ export class Dragon extends Actor {
         });
 
         this.anims.create({
-            key: 'dragonFire',
-            frames: this.anims.generateFrameNames('dragonFire', {
+            key: 'dragonAttackFire',
+            frames: this.anims.generateFrameNames('dragonAttackFire', {
                 prefix: 'dragon',
                 start: 1,
                 end: 8,
@@ -86,8 +100,8 @@ export class Dragon extends Actor {
         });
 
         this.anims.create({
-            key: 'dragonLaunchIndicate',
-            frames: this.anims.generateFrameNames('dragonLaunch', {
+            key: 'dragonAttackLaunchIndicate',
+            frames: this.anims.generateFrameNames('dragonAttackLaunch', {
                 prefix: 'dragon',
                 start: 1,
                 end: 8,
@@ -103,6 +117,14 @@ export class Dragon extends Actor {
     }
 
     initAttack(): void {
+        this.on('animationcomplete', function (event) {
+            if (event.key.includes('Attack') && event.key !== 'dragonAttackIndicate') {
+                this.isAttacking = false
+            }
+
+            this.anims.play('dragonIdle', false);
+        })
+
         this.scene.time.addEvent({
             delay: 2000,
             loop: true,
@@ -111,6 +133,8 @@ export class Dragon extends Actor {
 
                 let playerNearby = Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y) < this.attackMoveRange;
                 let rngAttack = Phaser.Math.Between(1, 4);
+
+                this.isAttacking = true
 
                 if (rngAttack === 1 && playerNearby) {
                     this.flipX = Phaser.Math.Between(1, 2) === 1
@@ -141,7 +165,7 @@ export class Dragon extends Actor {
     }
 
     launchAttack() {
-        this.anims.play('dragonLaunchIndicate');
+        this.anims.play('dragonAttackLaunchIndicate');
 
         this.scene.time.addEvent({
             delay: 1000,
@@ -163,7 +187,7 @@ export class Dragon extends Actor {
     }
 
     fireAttack() {
-        this.anims.play('dragonFire', true);
+        this.anims.play('dragonAttackFire', true);
 
         let line = new Phaser.Geom.Line(this.x, this.y, this.player.x, this.player.y)
 

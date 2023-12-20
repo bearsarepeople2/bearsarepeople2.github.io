@@ -49,7 +49,7 @@ export class DeathScene extends Scene {
             }
         });
 
-        this.player = new Phaser.Physics.Arcade.Sprite(this, 0, 0, 'girl').setScale(1)
+        this.player = new Phaser.Physics.Arcade.Sprite(this, 0, 0, 'girl').setScale(2)
         this.add.existing(this.player);
         this.player.anims.play('playerIdle')
 
