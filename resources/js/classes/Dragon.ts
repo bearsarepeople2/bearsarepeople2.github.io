@@ -131,7 +131,7 @@ export class Dragon extends Actor {
             callback: () => {
                 if (!this.agro) return
 
-                let playerNearby = Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y) < this.attackMoveRange;
+                let playerNearby = Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y) < this.attackMoveRange + 40;
                 let rngAttack = Phaser.Math.Between(1, 4);
 
                 this.isAttacking = true
