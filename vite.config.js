@@ -12,14 +12,5 @@ export default defineConfig({
         alias: {
             'vue': 'vue/dist/vue.esm-bundler',
         },
-    },
-    build: {
-        rollupOptions: {
-            output: {
-                entryFileNames: `assets/[name].js`,
-                chunkFileNames: `assets/[name].js`,
-                assetFileNames: `assets/[name].[ext]`
-            }
-        }
     }
 });
