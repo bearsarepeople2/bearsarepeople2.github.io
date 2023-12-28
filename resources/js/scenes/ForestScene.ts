@@ -1,6 +1,7 @@
 import { Scene } from 'phaser';
 import { Player } from '../classes/Player';
 import { Dragon } from '../classes/Dragon';
+import { EVENTS_NAME } from '../enums/consts';
 
 export class ForestScene extends Scene {
     private player: Player;
@@ -39,20 +40,15 @@ export class ForestScene extends Scene {
         let pathLayer = forestTiles.createLayer('path', [grassMap]);
         let overlayerLayer = forestTiles.createLayer('overlayer', [propMap, structureMap]);
         let upperlayerLayer = forestTiles.createLayer('upperlayer', [propMap, treeMap]);
-
-        // Player
-        this.player = new Player(this, 296, 680).setImmovable(true);
-
-        this.physics.add.collider(this.player, mapLayer);
-        this.physics.add.collider(this.player, pathLayer);
-        this.physics.add.collider(this.player, overlayerLayer);
-        this.physics.add.collider(this.player, upperlayerLayer);
         upperlayerLayer?.setDepth(1)
 
-        // Dragons
-        this.dragon = new Dragon(this, 25 * 16, 27 * 16, this.player).setImmovable(true).setScale(2).setDepth(1);
+        // Player
+        this.player = new Player(this.matter.world, 296, 680);
 
-        this.physics.add.collider(this.player, this.dragon);
+        this.input.on('pointerdown', this.player.attack, this.player);
+
+        // Dragons
+        this.dragon = new Dragon(this.matter.world, 25 * 16, 27 * 16, this.player).setScale(2).setDepth(1).setFixedRotation();
 
         // follow
         this.cameras.main.centerOn(this.dragon.x, this.dragon.y);
@@ -74,7 +70,7 @@ export class ForestScene extends Scene {
         });
 
         this.time.addEvent({
-            delay: 4750,
+            delay: 5000,
             callback: () => {
                 this.player.setVelocityY(0)
                 this.player.setEnabled(true);
@@ -83,17 +79,23 @@ export class ForestScene extends Scene {
                 pathLayer?.setCollisionByProperty({ collides: true });
                 overlayerLayer?.setCollisionByProperty({ collides: true });
                 upperlayerLayer?.setCollisionByProperty({ collides: true });
+                this.matter.world.convertTilemapLayer(mapLayer);
+                this.matter.world.convertTilemapLayer(pathLayer);
+                this.matter.world.convertTilemapLayer(overlayerLayer);
+                this.matter.world.convertTilemapLayer(upperlayerLayer);
             }
         });
 
     }
 
     death() {
+        this.game.events.removeAllListeners(EVENTS_NAME.attack);
         this.music.stop();
         this.scene.start('death-scene');
     }
 
     victory() {
+        this.game.events.removeAllListeners(EVENTS_NAME.attack);
         this.music.stop();
         this.scene.start('victory-scene');
     }

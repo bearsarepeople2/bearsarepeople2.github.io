@@ -1,20 +1,19 @@
 import { Physics } from 'phaser';
 import { EVENTS_NAME } from '../enums/consts';
-import { ForestScene } from '../scenes/ForestScene';
 
-export class Actor extends Physics.Arcade.Sprite {
+export class Actor extends Physics.Matter.Sprite {
     protected maxHp = 3;
     protected hp = 3;
     protected damage = 1;
-    protected speed = 120;
+    protected speed = 2;
     protected isAttacking = false;
     protected hitAudio: string[] = [];
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
-        super(scene, x, y, texture, frame);
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
-        this.getBody().setMaxSpeed(this.speed);
+    constructor(world: Phaser.Physics.Matter.World, x: number, y: number, texture: string, frame?: string | number) {
+        super(world, x, y, texture, frame);
+        this.setCollisionGroup(-1)
+        this.setFixedRotation()
+        world.scene.add.existing(this);
 
         this.scene.game.events.on(EVENTS_NAME.attack, this.attackHandler, this);
     }
@@ -24,7 +23,7 @@ export class Actor extends Physics.Arcade.Sprite {
             return // cant hit yourself
         }
 
-        actor.scene.physics.overlap(this, damageArea, () => {
+        this.scene.matter.overlap(this, [damageArea], () => {
             this.takeDamage(actor.damage)
         })
     }
@@ -63,7 +62,7 @@ export class Actor extends Physics.Arcade.Sprite {
 
     postDamageTaken(): void { }
 
-    getBody(): Physics.Arcade.Body {
-        return this.body as Physics.Arcade.Body;
+    getBody(): MatterJS.BodyType {
+        return this.body as MatterJS.BodyType;
     }
 }

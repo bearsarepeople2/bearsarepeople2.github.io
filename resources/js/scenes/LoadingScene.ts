@@ -6,6 +6,16 @@ export class LoadingScene extends Scene {
     }
 
     create(): void {
+        this.anims.create({
+            key: 'playerIdle',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 81,
+                end: 86,
+            }),
+            frameRate: 1,
+        });
+
         this.scene.start('opening-scene');
     }
 
@@ -13,6 +23,11 @@ export class LoadingScene extends Scene {
         this.load.bitmapFont('atariFont', 'assets/fonts/atari-classic.png', 'assets/fonts/atari-classic.xml');
         this.load.spritesheet('heart', 'assets/sprites/heart.png', { frameWidth: 16, frameHeight: 16 });
 
+        this.preloadGirl()
+        this.preloadDragon()
+    }
+
+    preloadGirl() {
         this.load.atlas('girl',
             'assets/sprites/girl.png',
             'assets/sprites/girl.json',
@@ -29,8 +44,9 @@ export class LoadingScene extends Scene {
         this.load.audio({ key: 'girlWalk1', url: ['assets/audio/girl/girl-walk1.wav'] });
         this.load.audio({ key: 'girlWalk2', url: ['assets/audio/girl/girl-walk2.wav'] });
         this.load.audio({ key: 'girlWalk3', url: ['assets/audio/girl/girl-walk3.wav'] });
+    }
 
-
+    preloadDragon() {
         this.load.atlas('dragon',
             'assets/sprites/dragon.png',
             'assets/sprites/dragon.json',

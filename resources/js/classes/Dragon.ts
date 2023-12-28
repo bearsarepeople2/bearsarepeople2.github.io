@@ -1,3 +1,4 @@
+import { getVelocityVector } from '../helpers/Physics';
 import { EVENTS_NAME } from '../enums/consts';
 import { Actor } from './Actor';
 import { Fire } from './Fire';
@@ -6,15 +7,15 @@ import { Player } from './Player';
 export class Dragon extends Actor {
     private player: Player;
     private hpBar: Phaser.GameObjects.Rectangle;
-    protected maxHp = 50;
-    protected hp = 50;
-    protected speed = 40;
+    protected maxHp = 10;
+    protected hp = 10;
+    protected speed = 1;
     protected agro: boolean = false;
     protected agroRadius = 120;
     protected attackMoveRange = 120;
 
-    constructor(scene: Phaser.Scene, x: number, y: number, player: Player) {
-        super(scene, x, y, 'dragon');
+    constructor(world: Phaser.Physics.Matter.World, x: number, y: number, player: Player) {
+        super(world, x, y, 'dragon');
         this.player = player
         this.initAnimations()
         this.initAgro()
@@ -30,14 +31,18 @@ export class Dragon extends Actor {
 
     update(): void {
         this.setSize(this.width, this.height)
-        this.getBody().setVelocity(0)
+        this.setVelocity(0)
 
-        if (Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y) < this.attackMoveRange) {
+        let playerDistance = Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y)
+
+        if (playerDistance < this.attackMoveRange && playerDistance > 40) {
             if (!this.isAttacking) {
                 this.anims.play('dragonWalk', true)
             }
 
-            this.scene.physics.moveToObject(this, this.player, this.speed)
+            let { x, y } = getVelocityVector(this.x, this.y, this.player.x, this.player.y, this.speed)
+
+            this.setVelocity(x, y)
         }
 
         let hpbarPercentage = (this.hp / this.maxHp) * 100
@@ -155,11 +160,10 @@ export class Dragon extends Actor {
             delay: 1000,
             loop: false,
             callback: () => {
-                let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x, this.y, 110, 120, 0xff0000, 0).setOrigin(0.5, 0.5)
-                this.scene.physics.add.existing(rect, false)
+                let rect = this.scene.matter.add.rectangle(this.x, this.y, 110, 120, { isSensor: true })
                 this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
                 this.anims.play('dragonAttackSwing', true);
-                rect.destroy()
+                this.scene.matter.world.remove(rect)
             }
         });
     }
@@ -172,13 +176,13 @@ export class Dragon extends Actor {
             loop: false,
             callback: () => {
                 this.player.setEnabled(false)
-                let deg = Phaser.Math.RadToDeg(Phaser.Math.Angle.Between(this.x, this.y, this.player.x, this.player.y))
-                this.scene.physics.velocityFromAngle(deg, 300, this.player.getBody().velocity)
+                let { x, y } = getVelocityVector(this.x, this.y, this.player.x, this.player.y, 4);
+                this.player.setVelocity(x, y)
             }
         });
 
         this.scene.time.addEvent({
-            delay: 2000,
+            delay: 1700,
             loop: false,
             callback: () => {
                 this.player.setEnabled(true)
@@ -203,7 +207,7 @@ export class Dragon extends Actor {
                 delay: index * 100,
                 loop: false,
                 callback: () => {
-                    let fire = new Fire(this.scene, points[index].x, points[index].y, 'fireStart', 'fire1');
+                    let fire = new Fire(this.scene.matter.world, points[index].x, points[index].y, 'fireStart', 'fire1');
 
                     fire.anims.play('fireStart')
 
@@ -212,7 +216,12 @@ export class Dragon extends Actor {
                         loop: false,
                         callback: () => {
                             fire.anims.play('fireLoop');
-                            this.scene.physics.add.overlap(this.player, fire, () => {
+                            fire.setOnCollideWith(this.player.getBody(), () => {
+                                fire.destroy()
+                                this.player.takeDamage(1)
+                            })
+
+                            this.scene.matter.overlap(this.player, [fire], () => {
                                 fire.destroy()
                                 this.player.takeDamage(1)
                             })
@@ -224,7 +233,6 @@ export class Dragon extends Actor {
                                     if (Phaser.Math.Between(1, 2) === 1) {
                                         fire.destroy()
                                     }
-
                                 },
                             });
                         },
@@ -235,11 +243,11 @@ export class Dragon extends Actor {
     }
 
     initAgro() {
-        let circle = new Phaser.GameObjects.Arc(this.scene, this.x, this.y, this.agroRadius, 0, 360, false, 0xff0000, 1)
+        let agroObject = this.scene.matter.add.circle(this.x, this.y, this.agroRadius, {
+            isSensor: true,
+        })
 
-        this.scene.physics.add.existing(circle)
-
-        this.scene.physics.add.overlap(this.player, circle, () => {
+        agroObject.setOnCollideWith(this.player.getBody(), () => {
             this.agro = true
         })
     }

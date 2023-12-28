@@ -12,8 +12,9 @@ export class Player extends Actor {
     private walkSfx3: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private enabled: boolean = false
 
-    constructor(scene: Phaser.Scene, x: number, y: number) {
-        super(scene, x, y, 'girl');
+    constructor(world: Phaser.Physics.Matter.World, x: number, y: number) {
+        super(world, x, y, 'girl');
+
         this.hitAudio = [
             'girlGrunt1',
             'girlGrunt2',
@@ -41,14 +42,14 @@ export class Player extends Actor {
     update(): void {
         if (!this.enabled) return
 
-        this.getBody().setVelocity(0);
+        this.setVelocity(0)
 
         if (this.keyW?.isDown) {
             if (!this.isAttacking) {
                 this.anims.play('playerUp', true);
             }
 
-            this.getBody().velocity.y = -this.speed;
+            this.setVelocityY(-this.speed);
             this.playWalkSfx()
         }
         if (this.keyA?.isDown) {
@@ -57,7 +58,7 @@ export class Player extends Actor {
                 this.setFlipX(true);
             }
 
-            this.getBody().velocity.x = -this.speed;
+            this.setVelocityX(-this.speed);
             this.playWalkSfx()
         }
         if (this.keyS?.isDown) {
@@ -65,7 +66,7 @@ export class Player extends Actor {
                 this.anims.play('playerDown', true);
             }
 
-            this.getBody().velocity.y = this.speed;
+            this.setVelocityY(this.speed);
             this.playWalkSfx()
         }
         if (this.keyD?.isDown) {
@@ -74,8 +75,14 @@ export class Player extends Actor {
                 this.setFlipX(false);
             }
 
-            this.getBody().velocity.x = this.speed;
+            this.setVelocityX(this.speed);
             this.playWalkSfx()
+        }
+
+        let { x, y } = this.getVelocity();
+
+        if (x !== 0 && y !== 0) {
+            this.setVelocity(x * 1 / Math.sqrt(2), y * 1 / Math.sqrt(2))
         }
     }
 
@@ -114,22 +121,12 @@ export class Player extends Actor {
             repeat: 3,
             yoyo: true,
             onComplete: () => {
-                heart?.destroy();
+                heart?.destroy()
             },
         });
     }
 
     initAnimations() {
-        this.anims.create({
-            key: 'playerIdle',
-            frames: this.anims.generateFrameNames('girl', {
-                prefix: 'girl',
-                start: 81,
-                end: 86,
-            }),
-            frameRate: 1,
-        });
-
         this.anims.create({
             key: 'playerLeft',
             frames: this.anims.generateFrameNames('girl', {
@@ -221,62 +218,61 @@ export class Player extends Actor {
 
             this.anims.play('playerIdle', false);
         })
+    }
 
-        this.scene.input.on('pointerdown', (pointer) => {
-            if (!this.enabled) return
+    attack(pointer) {
+        if (!this.enabled) return
 
-            if (pointer.button !== 0) {
-                return
-            }
+        if (pointer.button !== 0) {
+            return
+        }
 
-            if (this.isAttacking) {
-                return
-            }
+        if (this.isAttacking) {
+            return
+        }
 
-            let attackAngle = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY)
+        let attackAngle = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY)
 
-            let attackingHitboxX = 16 * Math.cos(attackAngle)
-            let attackingHitboxY = 16 * Math.sin(attackAngle)
+        let attackingHitboxX = 16 * Math.cos(attackAngle)
+        let attackingHitboxY = 16 * Math.sin(attackAngle)
 
-            let rect = new Phaser.GameObjects.Rectangle(this.scene, this.x + attackingHitboxX, this.y + attackingHitboxY, 28, 28, 0xff0000, 0).setOrigin(0.5, 0.5)
+        let rect = this.scene.matter.add.rectangle(this.x + attackingHitboxX, this.y + attackingHitboxY, 28, 28, {
+            isSensor: true,
+        })
 
-            // this.scene.add.existing(rect);
-            this.scene.physics.add.existing(rect, false)
+        this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
 
-            this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
+        this.scene.matter.world.remove(rect)
 
-            rect.destroy()
+        let postionFromPlayerX = pointer.position.x - (this.scene.cameras.main.width / 2)
+        let postionFromPlayerY = pointer.position.y - (this.scene.cameras.main.height / 2)
 
-            let postionFromPlayerX = pointer.position.x - (this.scene.cameras.main.width / 2)
-            let postionFromPlayerY = pointer.position.y - (this.scene.cameras.main.height / 2)
+        if (Math.abs(postionFromPlayerX) > postionFromPlayerY) {
+            this.isAttacking = true
+            this.setFlipX(false);
+            this.anims.play('playerAttackRight', true);
+        }
 
-            if (Math.abs(postionFromPlayerX) > postionFromPlayerY) {
-                this.isAttacking = true
-                this.setFlipX(false);
-                this.anims.play('playerAttackRight', true);
-            }
+        if (Math.abs(postionFromPlayerY) > postionFromPlayerX) {
+            this.anims.play('playerAttackUp', true);
+            this.isAttacking = true
+        }
 
-            if (Math.abs(postionFromPlayerY) > postionFromPlayerX) {
-                this.anims.play('playerAttackUp', true);
-                this.isAttacking = true
-            }
+        if (-postionFromPlayerX > Math.abs(postionFromPlayerY)) {
+            this.setFlipX(true);
+            this.anims.play('playerAttackLeft', true);
+            this.isAttacking = true
+        }
 
-            if (-postionFromPlayerX > Math.abs(postionFromPlayerY)) {
-                this.setFlipX(true);
-                this.anims.play('playerAttackLeft', true);
-                this.isAttacking = true
-            }
+        if (postionFromPlayerY > Math.abs(postionFromPlayerX)) {
+            this.isAttacking = true
+            this.anims.play('playerAttackDown', true);
+        }
 
-            if (postionFromPlayerY > Math.abs(postionFromPlayerX)) {
-                this.isAttacking = true
-                this.anims.play('playerAttackDown', true);
-            }
-
-            let sfx1 = this.scene.sound.add('girlAttack' + Phaser.Math.Between(1, 2));
-            let sfx2 = this.scene.sound.add('girlGrunt' + Phaser.Math.Between(1, 6));
-            sfx1.setVolume(0.05).play();
-            sfx2.setVolume(0.2).play();
-        });
+        let sfx1 = this.scene.sound.add('girlAttack' + Phaser.Math.Between(1, 2));
+        let sfx2 = this.scene.sound.add('girlGrunt' + Phaser.Math.Between(1, 6));
+        sfx1.setVolume(0.05).play();
+        sfx2.setVolume(0.2).play();
     }
 
     handleDeath(): void {
@@ -285,13 +281,5 @@ export class Player extends Actor {
 
     setEnabled(bool: boolean): void {
         this.enabled = bool;
-
-        if (this.enabled) {
-            this.getBody().setMaxSpeed(this.speed);
-        }
-
-        if (!this.enabled) {
-            this.getBody().setMaxSpeed(-1);
-        }
     }
 }

@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 
 export class OpeningScene extends Scene {
-    private player: Phaser.Physics.Arcade.Sprite;
+    private player: Phaser.GameObjects.Sprite;
     private music: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound
     private text: string[]
     private textIndex: integer = 0
@@ -15,19 +15,7 @@ export class OpeningScene extends Scene {
         this.music.loop = true
         this.music.setVolume(0.1).play();
 
-        this.anims.create({
-            key: 'playerIdle',
-            frames: this.anims.generateFrameNames('girl', {
-                prefix: 'girl',
-                start: 81,
-                end: 86,
-            }),
-            repeat: -1,
-            frameRate: 1,
-        });
-
-        this.player = new Phaser.Physics.Arcade.Sprite(this, 0, 0, 'girl').setScale(2)
-        this.add.existing(this.player);
+        this.player = this.add.sprite(0, 0, 'girl').setScale(2)
         this.player.anims.play('playerIdle')
 
         this.cameras.main.startFollow(this.player);

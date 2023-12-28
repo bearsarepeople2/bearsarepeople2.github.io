@@ -16,9 +16,12 @@ var config = {
     pixelArt: true,
     roundPixels: true,
     physics: {
-        default: 'arcade',
-        arcade: {
-            debug: false
+        default: 'matter',
+        matter: {
+            gravity: {
+                y: 0,
+            },
+            debug: true
         }
     },
     scene: [LoadingScene, OpeningScene, ForestScene, DeathScene, VictoryScene],

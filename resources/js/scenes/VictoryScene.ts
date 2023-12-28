@@ -1,8 +1,8 @@
 import { Scene } from 'phaser';
 
 export class VictoryScene extends Scene {
-    private player: Phaser.Physics.Arcade.Sprite;
-    private dragon: Phaser.Physics.Arcade.Sprite;
+    private player: Phaser.GameObjects.Sprite;
+    private dragon: Phaser.GameObjects.Sprite;
     private music: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound
     private text: string[]
     private textIndex: integer = 0
@@ -42,12 +42,10 @@ export class VictoryScene extends Scene {
             frameRate: 16,
         });
 
-        this.player = new Phaser.Physics.Arcade.Sprite(this, 0, 0, 'girl').setScale(2)
-        this.add.existing(this.player);
-        // this.player.anims.play('playerIdle')
+        this.player = this.add.sprite(0, 0, 'girl').setScale(2)
+        this.player.anims.play('playerIdle')
 
-        this.dragon = new Phaser.Physics.Arcade.Sprite(this, 0, 0, 'dragon').setScale(4)
-        this.add.existing(this.dragon);
+        this.dragon = this.add.sprite(0, 0, 'dragon').setScale(4)
         this.dragon.anims.play('dragonDeath')
 
         this.cameras.main.startFollow(this.player);
@@ -75,7 +73,7 @@ export class VictoryScene extends Scene {
                 ease: 'Cubic.easeOut',
                 duration: 800,
                 onComplete: () => {
-                    this.dragon.destroy();
+                    this.dragon.destroy()
                 },
             });
         }, 2000);
