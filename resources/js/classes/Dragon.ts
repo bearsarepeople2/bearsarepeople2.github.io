@@ -175,7 +175,7 @@ export class Dragon extends Actor {
             delay: 1000,
             loop: false,
             callback: () => {
-                this.player.setEnabled(false)
+                this.player.setInputsEnabled(false)
                 let { x, y } = getVelocityVector(this.x, this.y, this.player.x, this.player.y, 4);
                 this.player.setVelocity(x, y)
             }
@@ -185,7 +185,7 @@ export class Dragon extends Actor {
             delay: 1700,
             loop: false,
             callback: () => {
-                this.player.setEnabled(true)
+                this.player.setInputsEnabled(true)
             }
         });
     }

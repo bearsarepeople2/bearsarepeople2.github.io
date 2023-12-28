@@ -73,7 +73,7 @@ export class ForestScene extends Scene {
             delay: 5000,
             callback: () => {
                 this.player.setVelocityY(0)
-                this.player.setEnabled(true);
+                this.player.setInputsEnabled(true);
                 this.player.anims.play('playerIdle');
                 mapLayer?.setCollisionByProperty({ collides: true });
                 pathLayer?.setCollisionByProperty({ collides: true });

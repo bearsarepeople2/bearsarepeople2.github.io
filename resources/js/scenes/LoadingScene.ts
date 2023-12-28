@@ -16,7 +16,7 @@ export class LoadingScene extends Scene {
             frameRate: 1,
         });
 
-        this.scene.start('opening-scene');
+        this.scene.start('forest-scene');
     }
 
     preload() {
@@ -44,6 +44,7 @@ export class LoadingScene extends Scene {
         this.load.audio({ key: 'girlWalk1', url: ['assets/audio/girl/girl-walk1.wav'] });
         this.load.audio({ key: 'girlWalk2', url: ['assets/audio/girl/girl-walk2.wav'] });
         this.load.audio({ key: 'girlWalk3', url: ['assets/audio/girl/girl-walk3.wav'] });
+        this.load.audio({ key: 'girlDash', url: ['assets/audio/girl/girl-dash.mp3'] });
     }
 
     preloadDragon() {

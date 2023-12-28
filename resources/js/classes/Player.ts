@@ -10,7 +10,8 @@ export class Player extends Actor {
     private walkSfx1: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private walkSfx2: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private walkSfx3: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
-    private enabled: boolean = false
+    private inputsEnabled: boolean = false;
+    private dashEnabled: boolean = true;
 
     constructor(world: Phaser.Physics.Matter.World, x: number, y: number) {
         super(world, x, y, 'girl');
@@ -36,11 +37,12 @@ export class Player extends Actor {
 
         this.initAnimations()
         this.initAttack()
+        this.initDash()
         this.initHearts();
     }
 
     update(): void {
-        if (!this.enabled) return
+        if (!this.inputsEnabled) return
 
         this.setVelocity(0)
 
@@ -207,6 +209,36 @@ export class Player extends Actor {
             frameRate: 16,
         });
 
+        this.anims.create({
+            key: 'playerDashUp',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 13,
+                end: 16,
+            }),
+            frameRate: 4,
+        });
+
+        this.anims.create({
+            key: 'playerDashDown',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 51,
+                end: 54,
+            }),
+            frameRate: 4,
+        });
+
+        this.anims.create({
+            key: 'playerDashSide',
+            frames: this.anims.generateFrameNames('girl', {
+                prefix: 'girl',
+                start: 55,
+                end: 58,
+            }),
+            frameRate: 4,
+        });
+
         this.anims.play('playerIdle', true);
     }
 
@@ -220,8 +252,44 @@ export class Player extends Actor {
         })
     }
 
+    initDash(): void {
+        let keySpace = this.scene.input.keyboard?.addKey('SPACE');
+
+        keySpace?.on('down', () => {
+            if (!this.inputsEnabled || !this.dashEnabled || this.isAttacking) return
+
+            let { x, y } = this.getVelocity();
+
+            this.inputsEnabled = false;
+            this.dashEnabled = false;
+
+            this.setVelocity((x || 0) * 3, (y || 0) * 3)
+
+            this.scene.sound.add('girlDash').setVolume(0.3).play();
+
+            if (y < 0) {
+                this.anims.play('playerDashUp');
+            } else if (y > 0) {
+                this.anims.play('playerDashDown');
+            } else if (y == 0 && x > 0) {
+                this.anims.play('playerDashSide');
+            } else {
+                this.flipX = true
+                this.anims.play('playerDashSide');
+            }
+
+            setTimeout(() => {
+                this.setInputsEnabled(true)
+            }, 200)
+
+            setTimeout(() => {
+                this.dashEnabled = true
+            }, 3000)
+        });
+    }
+
     attack(pointer) {
-        if (!this.enabled) return
+        if (!this.inputsEnabled) return
 
         if (pointer.button !== 0) {
             return
@@ -279,7 +347,7 @@ export class Player extends Actor {
         this.scene.death();
     }
 
-    setEnabled(bool: boolean): void {
-        this.enabled = bool;
+    setInputsEnabled(bool: boolean): void {
+        this.inputsEnabled = bool;
     }
 }
