@@ -13,6 +13,7 @@ export class Player extends Actor {
     private walkSfx3: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private inputsEnabled: boolean = false;
     private dashEnabled: boolean = true;
+    protected speed = 1.6;
 
     constructor(world: Phaser.Physics.Matter.World, x: number, y: number) {
         super(world, x, y, 'girl');
