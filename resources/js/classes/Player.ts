@@ -7,6 +7,7 @@ export class Player extends Actor {
     private keyS: Phaser.Input.Keyboard.Key;
     private keyD: Phaser.Input.Keyboard.Key;
     private hearts: Phaser.GameObjects.Image[] = []
+    private dashIcon: Phaser.GameObjects.Image
     private walkSfx1: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private walkSfx2: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
     private walkSfx3: Phaser.Sound.WebAudioSound | Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound
@@ -271,6 +272,7 @@ export class Player extends Actor {
 
             this.inputsEnabled = false;
             this.dashEnabled = false;
+            this.dashIcon.destroy()
 
             this.setVelocity((x || 0) * 3, (y || 0) * 3)
 
@@ -293,8 +295,15 @@ export class Player extends Actor {
 
             setTimeout(() => {
                 this.dashEnabled = true
+                this.createDashIcon()
             }, 3000)
         });
+
+        this.createDashIcon()
+    }
+
+    createDashIcon() {
+        this.dashIcon = this.scene.add.image(20, 260, 'dash', 0).setScrollFactor(0, 0).setDepth(10);
     }
 
     attack(pointer) {
