@@ -70,7 +70,7 @@ export class ForestScene extends Scene {
         });
 
         this.time.addEvent({
-            delay: 5000,
+            delay: 5500,
             callback: () => {
                 this.player.setVelocityY(0)
                 this.player.setInputsEnabled(true);
