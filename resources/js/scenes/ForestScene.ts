@@ -40,7 +40,7 @@ export class ForestScene extends Scene {
         let pathLayer = forestTiles.createLayer('path', [grassMap]);
         let overlayerLayer = forestTiles.createLayer('overlayer', [propMap, structureMap]);
         let upperlayerLayer = forestTiles.createLayer('upperlayer', [propMap, treeMap]);
-        upperlayerLayer?.setDepth(1)
+        upperlayerLayer?.setDepth(2)
 
         // Player
         this.player = new Player(this.matter.world, 296, 680);
@@ -48,7 +48,7 @@ export class ForestScene extends Scene {
         this.input.on('pointerdown', this.player.attack, this.player);
 
         // Dragons
-        this.dragon = new Dragon(this.matter.world, 25 * 16, 27 * 16, this.player).setScale(2).setDepth(1).setFixedRotation();
+        this.dragon = new Dragon(this.matter.world, 25 * 16, 27 * 16, this.player).setScale(2).setFixedRotation();
 
         // follow
         this.cameras.main.centerOn(this.dragon.x, this.dragon.y);

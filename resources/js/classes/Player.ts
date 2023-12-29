@@ -81,11 +81,20 @@ export class Player extends Actor {
             this.playWalkSfx()
         }
 
+        // after we set all the velocities we normalise the diagonal velocity and add the attacking whilst movement penalty
         let { x, y } = this.getVelocity();
 
         if (x !== 0 && y !== 0) {
-            this.setVelocity(x * 1 / Math.sqrt(2), y * 1 / Math.sqrt(2))
+            x = x * 1 / Math.sqrt(2);
+            y = y * 1 / Math.sqrt(2)
         }
+
+        if (this.isAttacking) {
+            x = x * this.attackingMovementSpeedMultiplier
+            y = y * this.attackingMovementSpeedMultiplier
+        }
+
+        this.setVelocity(x, y)
     }
 
     playWalkSfx() {

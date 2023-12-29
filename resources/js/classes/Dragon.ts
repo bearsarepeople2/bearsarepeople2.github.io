@@ -12,7 +12,7 @@ export class Dragon extends Actor {
     protected speed = 1;
     protected agro: boolean = false;
     protected agroRadius = 120;
-    protected attackMoveRange = 120;
+    protected attackMoveRange = 100;
 
     constructor(world: Phaser.Physics.Matter.World, x: number, y: number, player: Player) {
         super(world, x, y, 'dragon');
@@ -35,7 +35,7 @@ export class Dragon extends Actor {
 
         let playerDistance = Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y)
 
-        if (playerDistance < this.attackMoveRange && playerDistance > 40) {
+        if (playerDistance < this.attackMoveRange && playerDistance > 40 && !this.isAttacking) {
             if (!this.isAttacking) {
                 this.anims.play('dragonWalk', true)
             }
@@ -81,7 +81,7 @@ export class Dragon extends Actor {
                 start: 19,
                 end: 21,
             }),
-            frameRate: 3,
+            frameRate: 4 * .8,
         });
 
         this.anims.create({
@@ -136,34 +136,36 @@ export class Dragon extends Actor {
             callback: () => {
                 if (!this.agro) return
 
-                let playerNearby = Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y) < this.attackMoveRange + 40;
-                let rngAttack = Phaser.Math.Between(1, 4);
+                let playerNearby = Phaser.Math.Distance.Between(this.x, this.y, this.player.x, this.player.y) < this.attackMoveRange;
+                let rngAttack = Phaser.Math.Between(1, 10);
 
                 this.isAttacking = true
 
-                if (rngAttack === 1 && playerNearby) {
+                if ((rngAttack < 8) && playerNearby) {
                     this.flipX = Phaser.Math.Between(1, 2) === 1
                     this.clawAttack()
-                } else if (rngAttack === 2) {
-                    this.launchAttack()
-                } else {
+                } else if (rngAttack < 10) {
                     this.fireAttack()
+                } else {
+                    this.launchAttack()
                 }
             }
         });
     }
 
     clawAttack() {
-        this.anims.play('dragonAttackIndicate', true);
+        this.anims.play('dragonAttackIndicate', false);
+        let cirlce = this.scene.add.circle(this.player.x, this.player.y, 50, 0xff0000, 0.5).setDepth(0);
+        let area = this.scene.matter.add.circle(this.player.x, this.player.y, 50, { isSensor: true })
 
         this.scene.time.addEvent({
-            delay: 1000,
+            delay: 800,
             loop: false,
             callback: () => {
-                let rect = this.scene.matter.add.rectangle(this.x, this.y, 110, 120, { isSensor: true })
-                this.scene.game.events.emit(EVENTS_NAME.attack, this, rect);
+                this.scene.game.events.emit(EVENTS_NAME.attack, this, area);
                 this.anims.play('dragonAttackSwing', true);
-                this.scene.matter.world.remove(rect)
+                this.scene.matter.world.remove(area)
+                cirlce.destroy()
             }
         });
     }

@@ -6,6 +6,7 @@ export class Actor extends Physics.Matter.Sprite {
     protected hp = 3;
     protected damage = 1;
     protected speed = 2;
+    protected attackingMovementSpeedMultiplier = 0.5;
     protected isAttacking = false;
     protected hitAudio: string[] = [];
 
@@ -13,6 +14,7 @@ export class Actor extends Physics.Matter.Sprite {
         super(world, x, y, texture, frame);
         this.setCollisionGroup(-1)
         this.setFixedRotation()
+        this.depth = 1;
         world.scene.add.existing(this);
 
         this.scene.game.events.on(EVENTS_NAME.attack, this.attackHandler, this);
