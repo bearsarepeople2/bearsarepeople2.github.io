@@ -2,6 +2,7 @@ import { Scene } from 'phaser';
 import { Player } from '../classes/Player';
 import { Dragon } from '../classes/Dragon';
 import { EVENTS_NAME } from '../enums/consts';
+import { Timer } from '../classes/Timer';
 
 export class ForestScene extends Scene {
     private player: Player;
@@ -86,6 +87,9 @@ export class ForestScene extends Scene {
             }
         });
 
+
+        let timer = new Timer(this, 340, 280).setScrollFactor(0, 0).setDepth(10);
+        this.add.existing(timer)
     }
 
     death() {
