@@ -16,7 +16,7 @@ export class LoadingScene extends Scene {
             frameRate: 1,
         });
 
-        this.scene.start('forest-scene');
+        this.scene.start('opening-scene');
     }
 
     preload() {

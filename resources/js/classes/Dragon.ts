@@ -8,7 +8,7 @@ export class Dragon extends Actor {
     private player: Player;
     private hpBar: Phaser.GameObjects.Rectangle;
     protected maxHp = 10;
-    protected hp = 10;
+    protected hp = 1;
     protected speed = 1;
     protected agro: boolean = false;
     protected agroRadius = 120;

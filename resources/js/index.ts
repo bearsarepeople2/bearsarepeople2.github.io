@@ -4,6 +4,7 @@ import { LoadingScene } from './scenes/LoadingScene';
 import { OpeningScene } from './scenes/OpeningScene';
 import { DeathScene } from './scenes/DeathScene';
 import { VictoryScene } from './scenes/VictoryScene';
+import { ScoreScene } from './scenes/ScoreScene';
 
 var config = {
     type: Phaser.AUTO,
@@ -24,7 +25,7 @@ var config = {
             debug: true
         }
     },
-    scene: [LoadingScene, OpeningScene, ForestScene, DeathScene, VictoryScene],
+    scene: [LoadingScene, OpeningScene, ForestScene, DeathScene, VictoryScene, ScoreScene],
 };
 
 new Phaser.Game(config);

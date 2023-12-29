@@ -8,6 +8,7 @@ export class ForestScene extends Scene {
     private player: Player;
     private dragon: Dragon;
     private music: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound
+    private timer: Timer
 
     constructor() {
         super('forest-scene');
@@ -88,8 +89,8 @@ export class ForestScene extends Scene {
         });
 
 
-        let timer = new Timer(this, 340, 280).setScrollFactor(0, 0).setDepth(10);
-        this.add.existing(timer)
+        this.timer = new Timer(this, 340, 280).setScrollFactor(0, 0).setDepth(10);
+        this.add.existing(this.timer)
     }
 
     death() {
@@ -101,7 +102,10 @@ export class ForestScene extends Scene {
     victory() {
         this.game.events.removeAllListeners(EVENTS_NAME.attack);
         this.music.stop();
-        this.scene.start('victory-scene');
+        this.scene.start('victory-scene', {
+            hearts: this.player.getHp(),
+            time: this.timer.getTime(),
+        });
     }
 
     update(): void {

@@ -62,6 +62,10 @@ export class Actor extends Physics.Matter.Sprite {
         return this.speed;
     }
 
+    getHp(): integer {
+        return this.hp;
+    }
+
     postDamageTaken(): void { }
 
     getBody(): MatterJS.BodyType {

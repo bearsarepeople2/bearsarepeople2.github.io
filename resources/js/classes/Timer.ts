@@ -9,6 +9,7 @@ export class Timer extends Phaser.GameObjects.BitmapText {
             loop: true,
             callback: () => {
                 this.time += 1
+
                 let minutes = Math.floor(this.time / 60)
                 let seconds = this.time - minutes * 60
 
@@ -25,5 +26,9 @@ export class Timer extends Phaser.GameObjects.BitmapText {
                 this.setText(`${minutes}:${seconds}`)
             }
         })
+    }
+
+    getTime() {
+        return this.time
     }
 }

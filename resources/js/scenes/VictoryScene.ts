@@ -11,7 +11,7 @@ export class VictoryScene extends Scene {
         super('victory-scene');
     }
 
-    create(): void {
+    create(data): void {
         this.anims.create({
             key: 'dragonDeath',
             frames: this.anims.generateFrameNames('dragonAttackLaunch', {
@@ -80,7 +80,6 @@ export class VictoryScene extends Scene {
 
         setTimeout(() => {
             this.player.anims.play('playerAttackDown')
-
         }, 1600);
 
         setTimeout(() => {
@@ -132,6 +131,15 @@ export class VictoryScene extends Scene {
                                 ease: 'Cubic.easeOut',
                                 duration: 1000,
                             });
+
+                            this.time.addEvent({
+                                delay: 4000,
+                                loop: true,
+                                callback: () => {
+                                    this.music.stop()
+                                    this.scene.start('score-scene', data)
+                                }
+                            })
                         }
                     });
 

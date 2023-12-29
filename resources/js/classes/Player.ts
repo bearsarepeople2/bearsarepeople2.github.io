@@ -290,14 +290,22 @@ export class Player extends Actor {
                 this.anims.play('playerDashSide');
             }
 
-            setTimeout(() => {
-                this.setInputsEnabled(true)
-            }, 200)
+            this.scene.time.addEvent({
+                delay: 200,
+                loop: false,
+                callback: () => {
+                    this.setInputsEnabled(true)
+                }
+            })
 
-            setTimeout(() => {
-                this.dashEnabled = true
-                this.createDashIcon()
-            }, 3000)
+            this.scene.time.addEvent({
+                delay: 3000,
+                loop: false,
+                callback: () => {
+                    this.dashEnabled = true
+                    this.createDashIcon()
+                }
+            })
         });
 
         this.createDashIcon()
