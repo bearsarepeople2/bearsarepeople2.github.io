@@ -22,7 +22,7 @@ var config = {
             gravity: {
                 y: 0,
             },
-            debug: true
+            debug: false
         }
     },
     scene: [LoadingScene, OpeningScene, ForestScene, DeathScene, VictoryScene, ScoreScene],
