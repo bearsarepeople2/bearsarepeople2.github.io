@@ -1,7 +1,7 @@
 import { Scene } from 'phaser';
 import { Player } from '../classes/Player';
 import { Dragon } from '../classes/Dragon';
-import { EVENTS_NAME } from '../enums/consts';
+import { COLLISION_GROUP, EVENTS_NAME } from '../enums/consts';
 import { Timer } from '../classes/Timer';
 
 export class ForestScene extends Scene {
@@ -31,6 +31,7 @@ export class ForestScene extends Scene {
         this.music.setVolume(0.01).play();
 
         let forestTiles = this.add.tilemap('forest');
+
         let grassMap = forestTiles.addTilesetImage('grass', 'grassTiles', 16, 16);
         let waterMap = forestTiles.addTilesetImage('water', 'waterTiles', 16, 16);
         let propMap = forestTiles.addTilesetImage('props', 'propTiles', 16, 16);
@@ -46,8 +47,6 @@ export class ForestScene extends Scene {
 
         // Player
         this.player = new Player(this.matter.world, 296, 680);
-
-        this.input.on('pointerdown', this.player.attack, this.player);
 
         // Dragons
         this.dragon = new Dragon(this.matter.world, 25 * 16, 27 * 16, this.player).setScale(2).setFixedRotation();
@@ -77,14 +76,28 @@ export class ForestScene extends Scene {
                 this.player.setVelocityY(0)
                 this.player.setInputsEnabled(true);
                 this.player.anims.play('playerIdle');
-                mapLayer?.setCollisionByProperty({ collides: true });
-                pathLayer?.setCollisionByProperty({ collides: true });
-                overlayerLayer?.setCollisionByProperty({ collides: true });
-                upperlayerLayer?.setCollisionByProperty({ collides: true });
+
+                mapLayer?.setCollisionByProperty({ collides: true })
+                pathLayer?.setCollisionByProperty({ collides: true })
+                overlayerLayer?.setCollisionByProperty({ collides: true })
+                upperlayerLayer?.setCollisionByProperty({ collides: true })
+
                 this.matter.world.convertTilemapLayer(mapLayer);
                 this.matter.world.convertTilemapLayer(pathLayer);
                 this.matter.world.convertTilemapLayer(overlayerLayer);
                 this.matter.world.convertTilemapLayer(upperlayerLayer);
+
+                this.matter.getMatterBodies().forEach((body) => {
+                    if (!body.gameObject?.tile) {
+                        return
+                    }
+
+                    body.collisionFilter = {
+                        category: COLLISION_GROUP.MAP,
+                        mask: COLLISION_GROUP.PLAYER | COLLISION_GROUP.ENEMY,
+                        group: 0,
+                    }
+                })
             }
         });
 

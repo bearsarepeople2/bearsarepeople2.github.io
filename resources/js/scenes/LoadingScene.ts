@@ -16,7 +16,7 @@ export class LoadingScene extends Scene {
             frameRate: 1,
         });
 
-        this.scene.start('opening-scene');
+        this.scene.start('loading-scene');
     }
 
     preload() {
@@ -33,6 +33,23 @@ export class LoadingScene extends Scene {
             'assets/sprites/girl.png',
             'assets/sprites/girl.json',
         );
+
+        this.load.atlas('bowSide',
+            'assets/sprites/bow-side.png',
+            'assets/sprites/bow-side.json',
+        );
+
+        this.load.atlas('bowFront',
+            'assets/sprites/bow-front.png',
+            'assets/sprites/bow-front.json',
+        );
+
+        this.load.atlas('bowBack',
+            'assets/sprites/bow-back.png',
+            'assets/sprites/bow-back.json',
+        );
+
+        this.load.spritesheet('arrow', 'assets/sprites/arrow.png', { frameWidth: 8, frameHeight: 16 });
 
         this.load.audio({ key: 'girlAttack1', url: ['assets/audio/girl/girl-attack1.wav'] });
         this.load.audio({ key: 'girlAttack2', url: ['assets/audio/girl/girl-attack2.wav'] });

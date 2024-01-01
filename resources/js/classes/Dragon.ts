@@ -1,5 +1,5 @@
 import { getVelocityVector } from '../helpers/Physics';
-import { EVENTS_NAME } from '../enums/consts';
+import { COLLISION_GROUP, EVENTS_NAME } from '../enums/consts';
 import { Actor } from './Actor';
 import { Fire } from './Fire';
 import { Player } from './Player';
@@ -10,12 +10,12 @@ export class Dragon extends Actor {
     protected maxHp = 50;
     protected hp = 50;
     protected speed = 1;
-    protected agro: boolean = false;
     protected agroRadius = 120;
     protected attackMoveRange = 100;
 
     constructor(world: Phaser.Physics.Matter.World, x: number, y: number, player: Player) {
         super(world, x, y, 'dragon');
+
         this.player = player
         this.initAnimations()
         this.initAgro()
@@ -209,7 +209,9 @@ export class Dragon extends Actor {
                 delay: index * 100,
                 loop: false,
                 callback: () => {
-                    let fire = new Fire(this.scene.matter.world, points[index].x, points[index].y, 'fireStart', 'fire1');
+                    let fire = new Fire(this.scene.matter.world, points[index].x, points[index].y, 'fireStart', 'fire1')
+                        .setCollisionCategory(COLLISION_GROUP.ENEMY_OBJECTS)
+                        .setCollidesWith(COLLISION_GROUP.PLAYER);
 
                     fire.anims.play('fireStart')
 
@@ -248,6 +250,12 @@ export class Dragon extends Actor {
         let agroObject = this.scene.matter.add.circle(this.x, this.y, this.agroRadius, {
             isSensor: true,
         })
+
+        agroObject.collisionFilter = {
+            category: COLLISION_GROUP.ENEMY_OBJECTS,
+            mask: COLLISION_GROUP.PLAYER,
+            group: 0,
+        }
 
         agroObject.setOnCollideWith(this.player.getBody(), () => {
             this.agro = true

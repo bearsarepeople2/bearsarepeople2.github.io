@@ -1,4 +1,5 @@
-import { EVENTS_NAME } from '../enums/consts';
+import { COLLISION_GROUP, EVENTS_NAME } from '../enums/consts';
+import { angleTowardsPoint, cardinalFromPoints, getVelocityVector } from '../helpers/Physics';
 import { Actor } from './Actor';
 
 export class Player extends Actor {
@@ -17,6 +18,9 @@ export class Player extends Actor {
 
     constructor(world: Phaser.Physics.Matter.World, x: number, y: number) {
         super(world, x, y, 'girl');
+
+        this.setCollisionCategory(COLLISION_GROUP.PLAYER)
+        this.setCollidesWith([COLLISION_GROUP.MAP, COLLISION_GROUP.ENEMY_OBJECTS]);
 
         this.hitAudio = [
             'girlGrunt1',
@@ -221,6 +225,36 @@ export class Player extends Actor {
         });
 
         this.anims.create({
+            key: 'playerBowAttackSide',
+            frames: this.anims.generateFrameNames('bowSide', {
+                prefix: 'girl',
+                start: 1,
+                end: 8,
+            }),
+            frameRate: 8,
+        });
+
+        this.anims.create({
+            key: 'playerBowAttackFront',
+            frames: this.anims.generateFrameNames('bowFront', {
+                prefix: 'girl',
+                start: 1,
+                end: 8,
+            }),
+            frameRate: 8,
+        });
+
+        this.anims.create({
+            key: 'playerBowAttackBack',
+            frames: this.anims.generateFrameNames('bowBack', {
+                prefix: 'girl',
+                start: 1,
+                end: 8,
+            }),
+            frameRate: 8,
+        });
+
+        this.anims.create({
             key: 'playerDashUp',
             frames: this.anims.generateFrameNames('girl', {
                 prefix: 'girl',
@@ -254,20 +288,25 @@ export class Player extends Actor {
     }
 
     initAttack(): void {
-        this.on('animationcomplete', function (event) {
+        this.on(Phaser.Animations.Events.ANIMATION_COMPLETE, function (event) {
             if (event.key.includes('Attack')) {
                 this.isAttacking = false
             }
 
             this.anims.play('playerIdle', false);
         })
+
+        this.scene.input.mouse?.disableContextMenu();
+
+        this.scene.input.on('pointerdown', this.attack, this);
     }
 
     initDash(): void {
         let keySpace = this.scene.input.keyboard?.addKey('SPACE');
 
         keySpace?.on('down', () => {
-            if (!this.inputsEnabled || !this.dashEnabled || this.isAttacking) return
+            // if (!this.inputsEnabled || !this.dashEnabled || this.isAttacking) return
+            if (!this.inputsEnabled || !this.dashEnabled) return
 
             let { x, y } = this.getVelocity();
 
@@ -279,15 +318,17 @@ export class Player extends Actor {
 
             this.scene.sound.add('girlDash').setVolume(0.3).play();
 
-            if (y < 0) {
-                this.anims.play('playerDashUp');
-            } else if (y > 0) {
-                this.anims.play('playerDashDown');
-            } else if (y == 0 && x > 0) {
-                this.anims.play('playerDashSide');
-            } else {
-                this.flipX = true
-                this.anims.play('playerDashSide');
+            if (!this.isAttacking) {
+                if (y < 0) {
+                    this.anims.play('playerDashUp');
+                } else if (y > 0) {
+                    this.anims.play('playerDashDown');
+                } else if (y == 0 && x > 0) {
+                    this.anims.play('playerDashSide');
+                } else {
+                    this.flipX = true
+                    this.anims.play('playerDashSide');
+                }
             }
 
             this.scene.time.addEvent({
@@ -299,7 +340,7 @@ export class Player extends Actor {
             })
 
             this.scene.time.addEvent({
-                delay: 3000,
+                delay: 1500,
                 loop: false,
                 callback: () => {
                     this.dashEnabled = true
@@ -318,13 +359,21 @@ export class Player extends Actor {
     attack(pointer) {
         if (!this.inputsEnabled) return
 
-        if (pointer.button !== 0) {
-            return
-        }
-
         if (this.isAttacking) {
             return
         }
+
+        if (pointer.button === 0) {
+            this.meleeAttack(pointer)
+        }
+
+        if (pointer.button === 2) {
+            this.rangedAttack(pointer)
+        }
+    }
+
+    meleeAttack(pointer) {
+        this.isAttacking = true
 
         let attackAngle = Phaser.Math.Angle.Between(this.x, this.y, pointer.worldX, pointer.worldY)
 
@@ -343,20 +392,17 @@ export class Player extends Actor {
         let postionFromPlayerY = pointer.position.y - (this.scene.cameras.main.height / 2)
 
         if (Math.abs(postionFromPlayerX) > postionFromPlayerY) {
-            this.isAttacking = true
             this.setFlipX(false);
             this.anims.play('playerAttackRight', true);
         }
 
         if (Math.abs(postionFromPlayerY) > postionFromPlayerX) {
             this.anims.play('playerAttackUp', true);
-            this.isAttacking = true
         }
 
         if (-postionFromPlayerX > Math.abs(postionFromPlayerY)) {
             this.setFlipX(true);
             this.anims.play('playerAttackLeft', true);
-            this.isAttacking = true
         }
 
         if (postionFromPlayerY > Math.abs(postionFromPlayerX)) {
@@ -368,6 +414,67 @@ export class Player extends Actor {
         let sfx2 = this.scene.sound.add('girlGrunt' + Phaser.Math.Between(1, 6));
         sfx1.setVolume(0.05).play();
         sfx2.setVolume(0.2).play();
+    }
+
+    rangedAttack(pointer) {
+        this.isAttacking = true
+
+        let pointerX = pointer.worldX;
+        let pointerY = pointer.worldY;
+
+        let directions = cardinalFromPoints(this.x, this.y, pointerX, pointerY)
+
+        if (directions.east) {
+            this.setFlipX(false);
+            this.anims.play('playerBowAttackSide');
+        }
+
+        if (directions.north) {
+            this.anims.play('playerBowAttackBack');
+        }
+
+        if (directions.west) {
+            this.setFlipX(true);
+            this.anims.play('playerBowAttackSide');
+        }
+
+        if (directions.south) {
+            this.anims.play('playerBowAttackFront');
+        }
+
+        this.scene.time.addEvent({
+            delay: 600,
+            callback: () => {
+                let arrow = this.scene.matter.add.sprite(this.x, this.y, 'arrow', undefined, { isSensor: true, frictionAir: 0 });
+
+                arrow.setCollisionCategory(COLLISION_GROUP.PLAYER_OBJECTS).setCollidesWith(COLLISION_GROUP.ENEMY);
+
+                let arrowAngle = angleTowardsPoint(this.x, this.y, pointerX, pointerY)
+
+                arrow.setOrigin(.5, .5).setRotation(arrowAngle);
+
+                let { x, y } = getVelocityVector(this.x, this.y, pointerX, pointerY, 5)
+
+                arrow.setVelocity(x, y);
+
+                this.scene.sound.add('girlGrunt' + Phaser.Math.Between(1, 3)).setVolume(0.2).play();
+
+                arrow.setOnCollide((a) => {
+                    let enemy = a.bodyA.parent.gameObject as Actor;
+
+                    enemy.takeDamage(this.damage)
+
+                    arrow.destroy()
+                })
+
+                this.scene.time.addEvent({
+                    delay: 4000,
+                    callback: () => {
+                        arrow.destroy()
+                    }
+                });
+            }
+        });
     }
 
     handleDeath(): void {
